@@ -1,0 +1,39 @@
+#include <iostream>
+#include "Rectangle.h"
+using namespace std;
+int main() {
+	setlocale(LC_ALL, "RUS");
+	rectangle a, z,s;
+	a.input();
+	a.output();
+	z.input();
+	z.output();
+	cout << endl;
+	cout << "Площадь S=" << a.S() << endl;
+	cout << "Периметр P=" << a.P() << endl;
+	cout << "R=" << a.RadOp() << endl;
+	cout <<"Является ли квадратом 0-НЕТ, 1-ДА"<< endl << "Ответ: "<< a.kv()<< endl;
+	a *= 2;
+	a.output();
+	if (a == z) {
+		cout << "равны";
+	}
+	else
+		cout << "Не равны";
+	cout << endl;
+	if (a.podobie(z)==1) {
+		cout << "Подобны";
+	}
+	else
+		cout << "Не подобны";
+	cout << endl;
+	a.CentrOp();
+	if (a.crossing(z)) {
+		cout << "Пересекаются";
+		cout << endl;
+		a.NewRectCross(z);
+		//s.output();
+	}
+	else
+		cout << "Не пересекаются";
+}

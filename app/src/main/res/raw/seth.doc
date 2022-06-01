@@ -1,0 +1,220 @@
+#pragma once
+#pragma once
+#include "Bulvector.h"
+#include <iostream>
+#include <cmath>
+#include <cstring>
+using namespace std;
+class Set :public BoolVector
+{
+    int M; 	 //кол-во элементов мн-ва
+
+public:
+    Set();
+    Set(char* s);
+    Set(const Set&);
+    Set& operator= (const Set&);
+    ~Set() {};
+
+    Set operator+ (char ch); 		// добавление эл-та к мн-ву  (создается новое мн-во)
+    Set& operator+= (char ch); 	// добавление эл-та к мн-ву (меняется *this)
+    Set operator+ (Set S); 		// объединение мн-в (создается новое мн-во)
+    Set& operator+= (Set S); 	// объединение мн-в (меняется *this)
+
+    Set operator- (char ch); 		// удаление эл-та из мн-ва (создается новое мн-во)
+    Set& operator-= (char ch); 	// удаление эл-та из мн-ва (меняется *this)
+    Set operator- (Set S); 		// разность мн-в (создается новое мн-во)
+    Set& operator-= (Set S); 	// разность мн-в (меняется *this)
+
+    Set operator* (Set S); 		//пересечение мн-в (создается новое мн-во)
+    Set  operator*= (Set S); 		//объединение мн-в (меняется *this)
+
+    Set operator~ ();			//дополнение до универсального
+                           //универсальное мн-во - мн-во из 256 символов
+
+    bool operator== (Set S);		//равенство мн-в
+    bool operator!= (Set S);		//неравенство мн-в
+
+    int getNumber();
+    bool FindKey(char);     	//проверка принадлежности эл-та мн-ву
+
+    bool Empty();       	      	//проверка пустоты множества
+    bool NotEmpty();          	//проверка непустоты множества
+
+    virtual void Scan(int) override;
+    virtual void Print() override;
+
+    friend ostream& operator<< (ostream& r, Set& S);
+    friend istream& operator>> (istream& r, Set& S);
+};
+Set::Set() : BoolVector(256) {
+    M = 0;
+}
+Set::Set(char* s) : BoolVector(256) {
+    for (int i = 0; s[i]; i++) {
+        SetUp1((UC)s[i]);
+    }
+    M = Weight();
+}
+Set::Set(const Set& x) :BoolVector(x) {
+    M = x.M;
+}
+Set& Set::operator= (const Set& x) {
+    M = x.M;
+    this->BoolVector::operator=(x);
+    return *this;
+
+}
+
+Set Set::operator+ (char ch) {
+    Set y = *this;
+    y.SetUp1((UC)ch);
+    y.M = y.Weight();
+    return y;
+}
+Set& Set::operator+= (char ch) {
+    this->SetUp1((UC)ch);
+    M = this->Weight();
+    return *this;
+}
+Set Set::operator+ (Set S) {
+    Set y = *this;
+    y |= S;
+    y.M = y.Weight();
+    return y;
+}
+Set& Set::operator+= (Set S) {
+    Set y = *this;
+    y |= S;
+    y.M = y.Weight();
+    *this = y;
+    M = y.M;
+    return *this;
+}
+
+Set Set::operator- (char ch) {
+    Set y = *this;
+    y.SetUp0((UC)ch);
+    y.M = y.Weight();
+    return y;
+}
+Set& Set::operator-= (char ch) {
+    this->SetUp0((UC)ch);
+    M = this->Weight();
+    return *this;
+}
+Set Set::operator- (Set S) {
+    Set y = *this;
+    Set T = (*this) * S;
+    y ^= T;
+    y.M = y.Weight();
+    return y;
+
+}
+Set& Set::operator-= (Set S) {
+    Set T = (*this) * S;
+    *this ^= T;
+    this->M = this->Weight();
+    return *this;
+
+}
+
+Set Set::operator* (Set S) {
+    Set y;
+    y.BoolVector::operator= (operator&(S));
+    y.M = y.Weight();
+    return y;
+
+}
+Set  Set::operator*= (Set S) {
+    this->BoolVector::operator= (operator&(S));
+    this->M = this->Weight();
+    return *this;
+}
+
+Set Set::operator~ () {
+    Set y = *this;
+    y.BoolVector::operator~();
+    y.M = y.Weight();
+    return y;
+}
+
+
+bool Set::operator== (Set S) {
+    if (this->BoolVector::operator==(S)) {
+        return true;
+    }
+    return false;
+}
+bool Set::operator!= (Set S) {
+    if (this->BoolVector::operator==(S)) {
+        return false;
+    }
+    return true;
+}
+
+int Set::getNumber() {
+    return M;
+}
+bool Set::FindKey(char k) {
+    for (int i = 0; i < 256; i++) {
+        if (this->BoolVector::operator[](i) == '1') {
+            if (char(i) == k) {
+                return true;
+                break;
+            }
+        }
+    }
+    return false;
+}
+
+bool Set::Empty()
+{
+    if (M == 0) {
+        return true;
+    }
+    return false;
+}
+bool Set::NotEmpty()
+{
+    if (M == 0) {
+        return false;
+    }
+    return true;
+}
+
+void Set::Scan(int n) {
+    cout << "enter " << n << " elements: ";
+    char* s;
+    s = new char[n + 1];
+    gets_s(s, n + 1);
+    *this = Set(s);
+    delete[] s;
+
+}
+void Set::Print() {
+    if (M == 0) {
+        cout << "set is empty";
+    }
+    else
+    {
+        for (int i = 0; i < 256; i++) {
+            if (this->BoolVector::operator[](i) == '1') {
+                cout << UC(i) << " ";
+            }
+        }
+    }
+}
+
+ostream& operator<< (ostream& r, Set& S) {
+    S.Print();
+    return r;
+}
+istream& operator>> (istream& r, Set& S) {
+    cout << "enter elements";
+    char s[257];
+    gets_s(s, 257);
+    S = Set(s);
+    return r;
+}
+

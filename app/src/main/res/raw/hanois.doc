@@ -1,0 +1,85 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+struct Usel {
+	int key;
+	Usel *next;
+};
+struct Stack {
+	Usel* head;
+	Stack() {
+		head = 0;
+	}
+	~Stack() {
+		Clear();
+	}
+	void push(int k)
+	{
+		Usel* p = new Usel;
+		p->key = k;
+		p->next = head;
+		head = p;
+	}
+	int pop() {
+		int k = head->key;
+		Usel* p = head;
+		head = head->next;
+		delete p;
+		return k;
+	}
+	int top() {
+		return head->key;
+	}
+	bool empty() {
+		if (head == 0)
+			return true;
+		return false;
+	}
+	void Clear() {
+		int k;
+		while (head)
+			k = pop();
+	}
+	void output() {
+		Usel* p;
+		for (p = head; p != 0; p = p->next)
+			cout << p->key << " ";
+		cout << endl;
+	}
+};
+int z = 1;
+void hanoiskie_bashni(int d, int s1, int s2, int s3, Stack *st)
+{
+	int k;
+	if (d != 0)
+	{
+			hanoiskie_bashni(d - 1, s1, s3, s2, st);
+			cout << z << ") Снимаем диск с " << s1 << " стержня и одеваем его на " << s2 << " стержень" << endl;
+			z++;
+			k = st[s1].pop();
+			st[s2].push(k);
+			cout << "   Содержимое 1 стержня: "; st[0].output();
+			cout << "   Содержимое 2 стержня: "; st[1].output();
+			cout << "   Содержимое 3 стержня: "; st[2].output();
+			cout << endl;
+			hanoiskie_bashni(d - 1, s3, s2, s1, st);
+	}
+}
+int main() {
+	int d, s1, s2, s3,c=0;
+	Stack st[3];
+	setlocale(LC_ALL, "rus");
+	cout << "Количество дисков" << endl;
+	cin >> d;
+	for (int i = d; i > 0; i--)
+	{
+	st[0].push(i);
+	}
+	cout << "Номер первого стержня 0" << endl;
+	cin >> s1;
+	cout << "Номер второго стержня 1" << endl;
+	cin >> s2;
+	cout << "Номер третьего стержня 2" << endl;
+	cin >> s3;
+	hanoiskie_bashni(d, s1, s2, s3, st);
+}

@@ -1,0 +1,254 @@
+#include <iostream>
+#define M_PI 3.14159265358979323846
+#include <cmath>
+using namespace std;
+class complex
+{
+private:
+	double re, im;
+public:
+	complex();//конструктор по умолчанию
+	complex(double, double);//конструктор с двумя аргументами
+	void setRe(double);//установка действительного части
+	double getRe() {//получение действительной части
+		return re;
+	}
+	complex(complex&);//копирование комплесного числа
+	double& Re();
+	complex sum(complex);  //сумма комплексного числа
+	complex Dif(complex);  //разность
+	complex Mult(complex); //умножение
+	complex Div(complex); //деление
+	complex	operator+=(complex);  //сложение изменяется *this
+	complex operator-=(complex);  //разность изменяется *this
+	complex operator*=(complex); //умножение изменяется *this
+	complex operator/=(complex);// деление изменяется *this
+	bool operator==(complex); //равенство комплексных чисел
+	bool operator!=(complex); //не равенство комплексных чисел
+
+	complex Conj();//сопряженное комплексное число
+	double Mod(); // иодуль комплексного числа
+	double Arg();//аргумент комплексного числа
+
+	void output();    //вывод комплексного числа
+	void input();     //ввод комплексного числп
+
+};
+complex::complex()
+{
+	re = 0; 
+	im = 0;
+}
+
+complex::complex(double x, double y)
+{
+	re = x; 
+	im = y;
+}
+inline void complex::setRe(double _re) {
+	re = _re;
+}
+complex::complex(complex &x) {
+	re = x.re;
+	im = x.im;
+}
+double& complex::Re() {
+	return re;
+}
+complex complex::sum(complex z) 
+{
+	complex sum;
+	sum.re = re + z.re;
+	sum.im = im + z.im;
+	return sum;
+}
+complex complex::Dif(complex z) {
+	complex sum;
+	sum.re = re - z.re;
+	sum.im = im - z.im;
+	return sum;
+
+}
+//(re1+im1)(re2-im2)/(re2+im2)(re2-im2)
+complex complex::Div(complex z) {
+	complex sum;
+	if (z.re = 0 && z.im == 0) {
+		return *this;
+	}
+	sum.re = (re*z.re+im*z.im)/(pow(z.re,2)+pow(z.im,2));
+	sum.im = (im*z.re-re*z.im)/(pow(z.re, 2) + pow(z.im, 2));
+	return sum;
+
+}
+complex complex::Mult(complex z)
+{
+	complex sum;
+	sum.re = re * z.re - im * z.im;
+	sum.im = re*z.im+z.re*im;
+	return sum;
+}
+
+complex complex::operator+=(complex z)
+{
+	re = re + z.re;
+	im = im + z.im;
+	return *this;
+}
+complex complex::operator-=(complex z) {
+	re = re - z.re;
+	im = im - z.im;
+	return *this;
+
+}
+//(re1+im1)(re2-im2)/(re2+im2)(re2-im2)
+complex complex::operator/=(complex z) {
+	if (z.re = 0 && z.im == 0) {
+		return *this;
+	}
+	re = (re * z.re + im * z.im) / (pow(z.re, 2) + pow(z.im, 2));
+	im = (im * z.re - re * z.im) / (pow(z.re, 2) + pow(z.im, 2));
+	return *this;
+
+}
+complex complex::operator*=(complex z)
+{
+	re = re * z.re - im * z.im;
+	im = re * z.im + z.re * im;
+	return *this;
+}
+
+
+inline double complex::Mod()
+{
+	return sqrt(pow(re,2)+pow(im,2));
+}
+double complex::Arg()
+{
+	if (re > 0) {
+		return atan(im / re);
+	}
+	else
+		if (re < 0 && im >= 0) {
+			return M_PI + atan(im / re);
+		}
+		else
+			if (re < 0 && im < 0) {
+				return -1*(M_PI + atan(im / re));
+			}
+			else
+				if (re == 0 && im > 0) {
+					return M_PI / 2;
+				}
+				else
+					if (re == 0 && im < 0) {
+						return -1*(M_PI / 2);
+					}
+}
+complex complex::Conj() {
+	complex sum;
+	sum.re = re;
+	sum.im = -1 * im;
+	return sum;
+}
+bool complex::operator==(complex z) {
+	if (re == z.re && im == z.im) {
+		return true;
+	}
+	return false;
+}
+bool complex::operator!=(complex z) {
+	if (re != z.re || im != z.im) {
+		return true;
+	}
+	return false;
+}
+void complex::input() {
+	cout << "Действительная часть" << endl;
+	cin >> re;
+	cout << "Мнимая часть" << endl;
+	cin >> im;
+}
+void complex::output() 
+{
+	if (re!=0)
+	{
+		cout << re;
+		if (im > 0)
+		{
+			cout << "+" << im << "i";
+		}
+		else
+			if (im == 0) {
+				cout << "";
+			}
+			else
+			cout << im << "i";
+	}
+		else
+			if (re == 0) 
+			{
+				cout << im << "i";
+			}
+	}
+int main() {
+	setlocale(LC_ALL, "RUS");
+	complex s1, s2, sum, dif,div,mult, conj;
+	cout << "Первое комплексное число";
+	cout << endl;
+	s1.input();
+	cout << endl;
+	cout << "Второе комплексное число";
+	cout << endl;
+	s2.input();
+	cout << "Сумма: ";
+	sum = s1.sum(s2);
+	sum.output();
+	cout << endl;
+	cout << "Разность: ";
+	dif = s1.Dif(s2);
+	dif.output();
+	cout << endl;
+	cout << "Деление: ";
+	div = s1.Div(s2);
+	div.output();
+	cout << endl;
+	cout << "Умножение: ";
+	mult = s1.Mult(s2);
+	mult.output();
+	cout << endl;
+	cout << "Модуль: ";
+	cout << s1.Mod();
+	cout << endl;
+	cout << "Аргумент: ";
+	cout << s1.Arg()*180/M_PI;
+	cout << endl;
+	cout << "Комплексно сопряженное число: ";
+	conj = s1.Conj();
+	conj.output();
+	cout << endl;
+	cout << "Равенство двух комплексных чисел: ";
+	if (s1 == s2) {
+		cout << "Равны";
+	}
+	if (s1 != s2) {
+		cout << "Не равны";
+	}
+	cout << endl;
+	cout << "Изменение первого комплексного числа(суммой): ";
+	s1 += s2;
+	s1.output();
+	cout << endl;
+	cout << "Изменение первого комплексного числа(разностью): ";
+	s1 -= s2;
+	s1.output();
+	cout << endl;
+	cout << "Изменение первого комплексного числа(умножением): ";
+	s1 *= s2;
+	s1.output();
+	cout << endl;
+	cout << "Изменение первого комплексного числа(делением): ";
+	s1 /= s2;
+	s1.output();
+	cout << endl;
+	return 0;
+}

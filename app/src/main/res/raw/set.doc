@@ -1,0 +1,94 @@
+#include <iostream>
+#include "Set.h"
+using namespace std;
+int main() {
+	char s[20] = "hello   world";
+	Set S1(s);
+	cout << "1) Set S1 = ";
+	S1.Print();
+	cout << endl;
+	cout <<"   Number elements in S1 = " << S1.getNumber() << endl;
+	Set S2;
+	S2 = S1;
+	cout << endl;
+	cout << "2) Set S2 = " << S2 << endl;
+	if (S1 == S2) {
+		cout << "   S1==S2" << endl;
+	}
+	else
+		cout << "   S1!=S2" << endl;
+	if (S2.FindKey('o')) {
+		S2 -= 'o';
+	}
+	else
+		S2 += 'o';
+
+	if (S2.FindKey('a')) {
+		S2 -= 'a';
+	}
+	else
+		S2 += 'a';
+	cout << endl;
+	cout << "3) Set S2: " << S2 << endl;
+	if (S1 != S2) {
+		cout << "   S1!=S2" << endl;
+	}
+	else
+		cout << "   S1==S2" << endl;
+	Set S3;
+	cout << endl;
+	cout << "4) Set S3: " << S3 << endl;
+	if (S3.Empty()) {
+		cout << "    is empty" << endl;
+	}
+	else
+		cout << "    is NoEmpty" << endl;
+	cout << endl;
+	cout << "5) ";
+	S3.Scan(6);
+	if (S3.Empty()) {
+		cout << "   is empty" << endl;
+	}
+	else
+		cout << "   is not empty" << endl;
+	cout << "   S3: " << S3 << endl;
+	Set S4;
+	S4 = S3 - 'y';
+	cout << endl;
+	cout << "6) Set S4: " << S4 << endl;
+	S4 = S4+ 'i';
+	cout << "   Set S4: " << S4 << endl;
+	Set T1, T2, T3;
+	T1 = S2 + S4;
+	T2 = S2 * S4;
+	T3 = S2 - S4;
+	cout << endl;
+	cout << "7) Set T1 (union of S2 and S4): " <<T1 << endl;
+	cout << "   Set T2 (intersection of S2 and S4): " << T2 << endl;
+	cout << "   Set T3 (difference of s2 and S4): " << T3 << endl;
+	Set T4,T5;
+	T4 = ~S2;
+	T5 = T4 * S2;
+	cout << endl;
+	cout << "8) Set T4 (complement of S2): " << T4 << endl;
+	cout << "   Set T5 (intersection of T4 and S2): " << T5 << endl;
+	Set S5;
+	cin >> S5;
+	cout << endl;
+	cout << "9) Set S5: " << S5 << endl;
+	S5 *= S1;
+	cout << endl;
+	cout << "10) Set S5: " << S5 << endl;
+	S5 += T2;
+	cout << endl;
+	cout << "11) new set S5: " << S5 << endl;
+	Set S6;
+	S6 = S1;
+	cout << endl;
+	cout << "12) Set S6: " << S6 << endl;
+	if (S5 != S6) {
+		cout << "   S5!=S6" << endl;
+	}
+	else
+		cout << "   S5==S6" << endl;
+}

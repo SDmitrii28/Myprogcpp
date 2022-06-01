@@ -1,0 +1,65 @@
+#include <ctime>
+#include <iostream>
+using namespace std;
+typedef unsigned int UI;
+//создание таблицы шагов по формуле седжвика
+int tabl(int n, int* tab) {
+	int j = 0;
+	do {
+		if (j % 2 == 0) {
+			tab[j] = 9 * pow(2, j) - 9 * pow(2, j / 2) + 1;
+		}
+		else
+			tab[j] = 8 * pow(2, j) - 6 * pow(2, (j + 1) / 2) + 1;
+	} while (3 * tab[j++] < n);
+	return j - 1;
+}
+//сортировка шелла по формуле седжвика
+void sortShellaSedj(int* a, int n) {
+	int h, j, t, k;
+	int tab[20];
+	h = tabl(n, tab);
+	while (h >= 0)
+	{
+		k = tab[h];
+		for (int i = k; i < n; i++)
+		{
+			j = i - k;
+			t = a[i];
+			while (j >= 0 && t < a[j])
+			{
+				a[j + k] = a[j];
+				j -= k;
+			}
+			a[j + k] = t;
+			/*cout << endl;
+			for (int i = 0; i < n; i++) {
+				cout << a[i] << " ";
+			}*/
+		}
+		h--;
+	}
+}
+int main() {
+	srand(time(NULL));
+	setlocale(LC_ALL, "rus");
+	int mas[100];//массив под 100 элементов
+	int n = 20;//размер массива
+	//создаем рандомно массив
+	for (int i = 0; i < n; i++) {
+		mas[i] = rand() % 100;//создаем рандомно массив в диапозоне от 0 до 100
+	}
+	cout << "Данный массив, который создан рандомно в диапозоне от [0...100]: " << endl;
+	for (int i = 0; i < n; i++) {
+		cout << mas[i] << " ";
+	}
+	cout << endl;
+	sortShellaSedj(mas, n);
+	cout << endl;
+	cout << "Отсортированный массив по алгоритму : "<< endl;
+	//вывод массива
+	for (int i = 0; i < n; i++) {//через цикл выводим значение каждой ячейки массива
+		cout << mas[i] << " ";//выводим через пробул элементы массива
+	}
+	cout << endl;
+}

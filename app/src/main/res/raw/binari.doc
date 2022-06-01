@@ -1,0 +1,52 @@
+#include <ctime>
+#include <iostream>
+using namespace std;
+typedef unsigned int UI;
+void binari_search(int* a, int z, int y)
+{
+	int left = 0;
+	int right = y - 1;
+	int average;
+	bool q = false;
+	while (left <= right && q != true)
+	{
+		average = (left + right) / 2;
+		if (a[average] == z)
+		{
+			q = true;
+		}
+		else
+			if (a[average] > z)
+			{
+				right = average - 1;
+			}
+			else
+				if (a[average] < z)
+				{
+					left = average + 1;
+				}
+	}
+	if (q == true)
+	{
+		printf("nomer elementa v massive %d ", average);
+	}
+	else
+		puts("not element");
+}
+int main() {
+	srand(time(NULL));
+	setlocale(LC_ALL, "rus");
+	int mas[100];//массив под 100 элементов
+	int n = 20;//размер массива
+	//создаем рандомно массив
+	for (int i = 0; i < n; i++) {
+		mas[i] = rand() % 100;//создаем рандомно массив в диапозоне от 0 до 100
+	}
+	cout << "Данный массив, который создан рандомно в диапозоне от [0...100]: " << endl;
+	for (int i = 0; i < n; i++) {
+		cout << mas[i] << " ";
+	}
+	cout << endl;
+	binari_search(mas, 50, n);
+	cout << endl;
+}

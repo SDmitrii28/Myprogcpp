@@ -1,0 +1,46 @@
+#include <ctime>
+#include <iostream>
+using namespace std;
+//сортировка шелла по формуде h=h/2
+void sortShella(int* a, int n) {
+	int h = n, j, t;
+	h = h / 2;
+	while (h > 0) {
+		for (int i = 0; i < n - h; i++)
+		{
+			j = i;
+			while (j >= 0 && a[j] > a[j + h])
+			{
+				t = a[j];
+				a[j] = a[j + h];
+				a[j + h] = t;
+				j--;
+			}
+		}
+		h = h / 2;
+	}
+}
+//вывод массива
+void prinsMassiv(int* a, int n) {
+	for (int i = 0; i < n; i++) {
+		cout << a[i] << " ";
+	}
+}
+int main() {
+	srand(time(NULL));
+	int a[50];
+	int n = 50;
+	//создаем рандомно массив
+	for (int i = 0; i < n; i++) {
+		a[i] = rand() % 50;
+		//cin >> a[i];
+	}
+	cout << "Array: ";
+	for (int i = 0; i < n; i++) {
+		cout << a[i] << " ";
+	}
+	cout << endl;
+	sortShella(a, n);
+	cout << "SortArray: ";
+	prinsMassiv(a, n);
+}

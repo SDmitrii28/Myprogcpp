@@ -1,0 +1,244 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+class rational {
+private:
+	int chis;
+	int znam;
+public:
+	rational(){
+		chis = 0;
+		znam = 1;
+	}
+	rational(int _chis, int _znam) {
+		chis = _chis;
+		znam = _znam;
+	}
+	rational operator+(rational);
+	rational operator-(rational);
+	rational operator*(rational);
+	rational operator/(rational);
+	rational operator+=(rational);
+	rational operator-=(rational);
+	rational operator*=(rational);
+	rational operator/=(rational);
+	bool operator>(rational);
+	bool operator>=(rational);
+	bool operator<(rational);
+	bool operator<=(rational);
+	bool operator==(rational);
+	bool operator!=(rational);
+	int nod();
+	void cokr();
+	void imput();
+	void output();
+};
+void rational::imput() {
+	cout << "¬ведите числитель" << endl;
+	cin >> chis;
+	cout << "¬ведите знаменатель" << endl;
+	cin >> znam;
+	if (znam == 0) {
+		cout << "¬ведите знаменатель еще раз" << endl;
+		cin >> znam;
+	}
+	if (znam < 0) {
+		chis *= -1;
+	}
+}
+void rational::output() {
+	if (znam == 1) {
+		cout << chis;
+	}
+	else
+	{
+		cout << chis << "/";
+		cout << znam;
+	}
+}
+rational rational:: operator+(rational z) {
+	rational sum;
+	int s = znam * z.znam;
+	sum.chis = chis *z.znam + z.chis *znam;
+	sum.znam = s;
+	sum.cokr();
+	return sum;
+}
+rational rational:: operator-(rational z) {
+	rational dif;
+	int s = znam * z.znam;
+	dif.chis = chis * z.znam - z.chis * znam;
+	dif.znam = s;
+	dif.cokr();
+	return dif;
+}
+rational rational:: operator/(rational z) {
+	rational div;
+	div.chis = chis * z.znam;
+	div.znam = z.chis * znam;
+	div.cokr();
+	return div;
+}
+rational rational:: operator*(rational z) {
+	rational mult;
+	mult.chis = (chis * z.chis);
+	mult.znam = (z.znam * znam);
+	mult.cokr();
+	return mult;
+}
+
+rational rational:: operator+=(rational z) {
+	int s = znam * z.znam;
+	chis = chis * z.znam + z.chis * znam;
+	znam = s;
+	this->cokr();
+	return *this;
+}
+rational rational:: operator-=(rational z) {
+	int s = znam * z.znam;
+	chis = chis * z.znam - z.chis * znam;
+	znam = s;
+	this->cokr();
+	return *this;
+}
+rational rational:: operator/=(rational z) {
+	chis = chis * z.znam;
+	znam = z.chis * znam;
+	this->cokr();
+	return *this;
+}
+rational rational:: operator*=(rational z) {
+	chis = (chis * z.chis);
+	znam = (z.znam * znam);
+	this->cokr();
+	return *this;
+}
+bool rational::operator>(rational z) {
+	if (chis * z.znam > z.chis* znam) {
+		return true;
+	}
+	return false;
+}
+bool rational::operator>=(rational z) {
+	if (chis * z.znam >= z.chis* znam) {
+		return true;
+	}
+	return false;
+}
+bool rational::operator<(rational z) {
+	if (chis * z.znam < z.chis* znam) {
+		return true;
+	}
+	return false;
+}
+bool rational::operator<=(rational z) {
+	if (chis * z.znam <= z.chis* znam) {
+		return true;
+	}
+	return false;
+}
+bool rational::operator==(rational z) {
+	if (chis * z.znam == z.chis* znam) {
+		return true;
+	}
+	return false;
+}
+bool rational::operator!=(rational z) {
+	if (chis * z.znam != z.chis* znam) {
+		return true;
+	}
+	return false;
+}
+int rational::nod()
+{
+	int n;
+	int chis_=chis, znam_=znam;
+	while (chis_ != 0 && znam_ != 0)
+	{
+		if (abs(chis_) >= abs(znam_)) 
+		{
+			chis_ = chis_ % znam_;
+		}
+		else
+			znam_ = znam_ % chis_;
+	}
+	n = abs(chis_ + znam_);
+return n;
+}
+void rational::cokr()
+{
+	int a1 = chis, a2 = znam;
+	int r = this->nod();
+	//cout << r;
+	chis = a1/ r;
+	znam = a2/ r;
+}
+int main() {
+	setlocale(LC_ALL, "RUS");
+	rational z1(5,3), z2, sum,dif,mult,div;
+	//z1.imput();
+	z2.output();
+	cout << endl;
+	z1.output();
+	cout << endl;
+	z2.imput();
+	sum = z1+z2;
+	sum.output();
+	cout << endl;
+
+	dif = z1-z2;
+	dif.output();
+	cout << endl;
+
+	div = z1/z2;
+	div.output();
+	cout << endl;
+
+	mult = z1*z2;
+	mult.output();
+	cout << endl;
+	cout << endl;
+
+
+	z1 += z2;
+	z1.output();
+	cout << endl;
+
+	z2 -= z1;
+	z2.output();
+	cout << endl;
+
+	z1 *= z2;
+	z1.output();
+	cout << endl;
+
+	z1 /= z2;
+	z1.output();
+	cout << endl;
+
+	if (z1 > z2) {
+		z1.output(); cout << " > "; z2.output();
+	}
+	else
+		if (z1 >= z2) {
+			z1.output(); cout << " >= "; z2.output();
+		}
+		else
+			if (z1 < z2) {
+				z1.output(); cout << " < "; z2.output();
+			}
+			else
+				if (z1 <= z2) {
+					z1.output(); cout << " <= "; z2.output();
+				}
+				else
+					if (z1 == z2) {
+						z1.output(); cout << " == "; z2.output();
+					}
+					else
+						if (z1 != z2) {
+							z1.output(); cout << " != "; z2.output();
+						}
+	
+	return 0;
+}

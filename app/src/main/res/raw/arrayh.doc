@@ -1,0 +1,367 @@
+#pragma once
+#include <iostream>
+#include <cmath>
+using namespace std;
+class Array {
+private:
+	int* a;// указатель на массив
+	int n;// количество элементов в массиве
+	int mem;// выделяемая память
+	void shiftleft(int pos);// сдвиг влево начиная с позиции pos
+public:
+	Array(); // конструктор по умолчанию
+	Array(int, int); //конструктор с двумя аргументами
+	Array(int* b, int m);//конструктор с массивом и количесвом элементов
+	Array(const Array&);// копирование одного объекта в друггой
+	Array& operator=(const Array&);// присвоение одного объекта к другому
+	~Array();//деструктор( удаляет выделяемую память)
+	void scan(int m); // ввод массива с m элементами
+	void print();// вывод массива
+	int& operator[](int); // нахождение i элемента
+	int findKey(int);// возвращает индекс элемента или -1, если элемента нет
+	Array& operator+=(int);// изменяется *this добавление числа
+	Array operator+(int);// создается новый объект добавление числа
+	Array& operator+=(Array);// изменяется *this добавление объекта
+	Array operator+(Array);// создается новый объект добавление  добавление объекта
+	Array& operator-=(int);// изменяется *this удалением числа
+	Array operator-(int);// b=*this-x
+	Array& DelPosEq(int);// возвращает *this // удаляет позицию
+	Array DelPosNew(int);// возвращает новый массив // удаляет позицию
+	bool operator==(Array); // сравнение элементов массива
+	bool operator!=(Array);// сравнение элементов массива
+	int max();//возвращает индекс макс.
+	int min();//возвращает  индекс мин.
+	void sort();//сортировка массива пузырьком
+	int razmer();//размер массива
+	friend  ostream& operator << (ostream& r, Array& x);//потоковый вывод 
+	friend  istream& operator >> (istream& r, Array& x);//потоковый ввод
+};
+Array::Array() {
+	a = new int[1];// выделяем пямать для одного элемента
+	n = 1;
+	mem = 1;
+}
+Array::Array(int N, int MEM) {// N массива MEM выделяемая память
+	n = N;
+	if (N > MEM) { //если N>MEM/ то увеличиваем mem
+		mem = n + 10;
+	}
+	else
+	{
+		mem = MEM;
+	}
+	a = new int[mem];
+}
+Array::Array(int* b, int m) {// m размер массива b
+	mem = m + 10;
+
+	a = new int[mem];// выделяем память
+	for (int i = 0; i < m; i++) {
+		a[i] = b[i];//записываем в массив а элементы массива b
+	}
+	n = m;// изменяем n
+}
+Array::Array(const Array& x) {
+	n = x.n;//изменяем размер массива
+	mem = x.mem;//изменяем выделяемую память
+
+	a = new int[mem];//выделяем память
+	for (int i = 0; i < n; i++) {
+		a[i] = x.a[i];// записываем в массив а элементы объекта массива x.
+	}
+
+}
+Array& Array::operator=(const Array& x) {
+	if (this != &x) 
+	{
+		delete[]a;
+		n = x.n;//изменяем размер массива
+		mem = x.mem;//изменяем выделяемую память
+		a = new int[mem];//выделяем память
+		for (int i = 0; i < n; i++) {
+			a[i] = x.a[i];// записываем в массив а элементы объекта массива x.
+		}
+	}
+	return *this;
+
+}
+Array::~Array() {
+	delete[]a;// удаляем память
+}
+void Array::scan(int m) {// m-количество элементов в массиве
+	cout << "Enter " << m << " elements" << endl;
+	if (n != m) {
+		delete[]a;
+		a = new int[mem = m + 10];// выделяем память, при этом изменяем выделяемую память
+		n = m;//изменяем n
+	}
+	for (int i = 0; i < n; i++) {
+		cin >> a[i];//вводим a[i]
+	}
+}
+void Array::print() {
+	for (int i = 0; i < n; i++) {
+		cout << a[i] << " ";// вывод a[i]
+	}
+
+}
+// функция которая определяет i-ый элемент
+int& Array::operator[](int k) {
+	try {
+		if (k < 0)//проверяем какое число k
+		{
+			throw(0);
+		}
+		if (k >= n) {//проверяем какое число k
+			throw("incorrect index");
+		}
+		return a[k];
+	}
+	catch (int m) {
+		cout << "index < 0";
+		return a[m];
+	}
+	catch (char* s) {
+		cout << s;
+		return a[n - 1];
+	}
+	catch (...) {
+		cout << "incorrect index";
+		return a[0];
+	}
+}
+Array& Array::operator+=(int key) {
+	int i, * t;// t -вспомогательный массив
+	if (mem > n) {// проверяем память, если она больше, то в n-ый элемент вставляем key
+		a[n] = key;
+		n++;//изменяем размер массива
+	}
+	else
+	{
+		mem = n + 10;//изменяем mem
+		t = new int[mem];//выделяем память для t
+		for (i = 0; i < n; i++) {
+			t[i] = a[i];// записываем в массив t элементы массива a
+		}
+		t[n] = key;//в n-ый элемент вставляем key
+		delete[]a;// удаляем память
+		a = t;// записываем в массив a элементы массива t
+		n++;//изменяем размер массива
+	}
+		return *this;
+}
+Array Array::operator+(int key) {
+	Array Res(n+1, n + 10);// создаем объект res c размером n+1  и выделяемой памятью n+10
+	for (int i = 0; i < n; i++) {
+		Res.a[i] = a[i];// записываем в объект  массива res, элементы массива a
+	}
+	Res.a[n] = key;//в n-ый элемент вставляем key
+	return Res;
+}
+Array& Array::operator+=(Array z) {
+	if (mem < n + z.n) {//проверяется размер памяти
+		mem = n + z.n+10;
+		int* t = new int[mem];//выделяем память для t
+		for (int i = 0; i < n; i++) {
+			t[i] = a[i];// записываем в массив t элементы массива a
+		}
+		for (int i = 0; i < z.n; i++) {
+			t[n + i] = z.a[i];// записываем в массив t элементы массива a
+		}
+		delete[]a;// удаляем память
+		a = t;// записываем в массив a элементы массива t
+		n = n + z.n;// изменяем размер массива 
+	}
+	else {
+		for (int i = n; i < n + z.n; i++) {
+			a[i] = z.a[i - n];// записываем в массив a элементы объекта массива z
+		}
+		n = n + z.n;//изменяем размер массива 
+	}
+	return *this;
+}
+Array Array::operator+(Array z) {
+	Array res(n + z.n, mem + z.mem);// создаем объект res c размером n+z.n  и выделяемой памятью mem+z.mem
+	for (int i = 0; i < n; i++) {
+		res.a[i] = a[i];// записываем в объект массива, элементы массива a
+	}
+	for (int i = n; i < n + z.n; i++) {
+		res.a[i] = z.a[i - n];// записываем в объект массива, элементы объекта массива z
+	}
+	return res;
+}
+istream& operator >> (istream& r, Array& x) {
+	x.scan(x.n);//потоковый ввод
+	return r;
+}
+ostream& operator << (ostream& r, Array& x) {
+	x.print();//потоковый вывод
+	return r;
+}
+int Array::findKey(int key) {
+	int pos = -1;// изначальная позиция =-1
+	for (int i = 0; i < n; i++) {
+		if (this->a[i] == key) {//проверяем есть ли в массиве значение key
+			pos = i;// позиции присваиваем i-ый номер
+			break;//выходим из цыкла
+		}
+	}
+	return pos;
+}
+// сдвигаем влево на 1
+void Array::shiftleft(int pos) {
+	for (int i = pos; i < n - 1; i++) {
+		a[i] = a[i + 1];
+	}
+	n = n - 1;//изменяем размер массива 
+}
+Array& Array::operator-=(int key) {
+	int i, * t;
+	int pos = this->findKey(key);// проверяем чему равна позиция
+	if (pos == -1) {
+		return *this;
+	}
+	else
+	{
+		for (i = pos; i < n - 1; i++) {
+			a[i] = a[i + 1];//// сдвигаем влево на 1
+		}
+		n--;//изменяем размер массива 
+		return *this;
+	}
+}
+Array Array::operator-(int key) {
+	Array Res(n, mem);
+	int pos = this->findKey(key);// проверяем чему равна позиция
+	if (pos == -1) {
+		return *this;
+	}
+	else
+	{
+		for (int i = 0; i < pos; i++) {
+			Res.a[i] = a[i];// записываем в объект массива, элементы массива a
+		}
+		for (int i = pos; i < n - 1; i++) {
+			Res.a[i] = a[i + 1];// записываем в объект массива, элементы массива a[i+1]
+		}
+		Res.n = n - 1;// изменяем размер массива объекта res
+	}
+	return Res;
+}
+Array& Array::DelPosEq(int in) {
+	if (in >= n || in < 0) {// проверяем позицию
+		return *this;
+	}
+	else
+	{
+		for (int i = in; i < n - 1; i++) {
+			a[i] = a[i + 1];// сдвигаем массив
+		}
+		n--;//изменяем размер массива 
+		return *this;
+	}
+
+}
+// возвращает *this
+Array Array::DelPosNew(int in) {
+	Array res(n, mem + 1);
+	res = *this;//ируем в массив 
+	if (in >= n || in < 0) {// проверяем позицию
+		return *this;
+	}
+	else
+	{
+		for (int i = 0; i < in; i++) {
+			res.a[i] = a[i];
+		}
+		for (int i = in; i < n - 1; i++) {
+			res.a[i] = a[i + 1];// сдвигаем массив и записываем в объект  res
+		}
+		res.n = n - 1;//изменяем размер объекта n
+
+		return res;
+	}
+
+}// возвращает новый массив
+bool Array::operator==(Array s) {
+	int c = 0;
+	if (n == s.n) {// проверяем размеры
+		for (int i = 0; i < n; i++) {
+			if (a[i] == s.a[i]) {//проверяем равны ли элементы массива
+				c++;// увеличиваем счетчик
+			}
+		}
+	}
+	else
+		return false;
+	if (c == n) {//проверяем равен ли счетчик размеру массива
+		return true;
+	}
+	else
+		return false;
+}
+bool Array::operator!=(Array s) {
+	int c = 0;
+	if (n == s.n) {// проверяем размеры
+		for (int i = 0; i < n; i++) {
+			if (a[i] != s.a[i]) {//проверяем не равны ли элементы массива
+				c++;// увеличиваем счетчик
+			}
+		}
+	}
+	else
+		return true;
+	if (c != n) {//проверяем не равен ли счетчик размеру массива
+		return true;
+	}
+	else
+		return false;
+
+}
+//нахожденеи номера максимального элемента, всё просто берем за мак. элемент первое значение массива
+//и сравниваем  с остальными при этом изменяя mak. и элемент номер элемента
+int Array::max() {
+	int imax = 0;
+	int max = a[imax];
+	for (int i = 0; i < n; i++) {
+		if (a[i] > max) {
+			max = a[i];
+			imax = i;
+		}
+	}
+	return imax;
+}//возвращает индекс макс.
+//нахожденеи номера минмального элемента, всё просто берем за мин. элемент первое значение массива
+//и сравниваем  с остальными при этом изменяя min.  и элемент номер элемента
+int Array::min() {
+	int imin = 0;
+	int min = a[imin];
+	for (int i = 0; i < n; i++) {
+		if (a[i] < min) {
+			min = a[i];
+			imin = i;
+		}
+	}
+	return imin;
+}//возвращает  индекс мин.
+//простая сортировка пузырьком
+void Array::sort() 
+{
+	int i, j, t;
+	for (j = 1; j <= n - 1; j++)
+	{
+		for (i = 0; i < n - j; i++)
+		{
+			if (a[i] > a[i + 1])
+			{
+				t = a[i];
+				a[i] = a[i + 1];
+				a[i + 1] = t;
+			}
+		}
+	}
+}
+//размер массива объекта
+int Array::razmer() {
+	return n;
+}

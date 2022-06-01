@@ -1,0 +1,167 @@
+#include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#include <conio.h>
+void random(int y) {
+
+	int x;
+	FILE* f;
+	fopen_s(&f, "data1.txt", "w");
+	srand(time(NULL));
+	x = rand()%10;
+	fprintf(f, "%d ", x);
+	for (int i = 1; i < y; i++)
+	{
+		x = rand() % 10;
+		fprintf(f, "%d ", x);
+	}
+	fclose(f);
+	fopen_s(&f, "data1.txt", "r");
+	fscanf_s(f, "%d", &x);
+	while (!feof(f))
+	{
+		printf("%d ", x);
+		fscanf_s(f, "%d", &x);
+
+	}
+	fclose(f);
+	printf("\n");
+
+}
+void Integration(char* name, char* name1, char* name2)
+{
+	FILE* A, * F[2];
+	int x[2], y[2], n;
+
+	fopen_s(&A, name, "w");
+	fopen_s(&F[0], name1, "r");
+	fopen_s(&F[1], name2, "r");
+
+	if (A == NULL || F[0] == NULL || F[1] == NULL)
+	{
+		puts("error");
+		_getch();
+		exit(-2);
+	}
+
+	fscanf_s(F[0], "%d", &x[0]);
+	fscanf_s(F[1], "%d", &x[1]);
+	while (!feof(F[0]) && !feof(F[1]))
+	{
+		if (x[0] < x[1])
+			n = 0;
+		else
+			n = 1;
+
+		fprintf(A, "%d ", x[n]);
+		fscanf_s(F[n], "%d", &y[n]);
+
+		if (!feof(F[n]) && x[n] <= y[n])
+			x[n] = y[n];
+		else {
+			fprintf(A, "%d ", x[1 - n]);
+			fscanf_s(F[1 - n], "%d", &y[1 - n]);
+			while (!feof(F[1 - n]) && x[1 - n] <= y[1 - n])
+			{
+				x[1 - n] = y[1 - n];
+				fprintf(A, "%d ", x[1 - n]);
+				fscanf_s(F[1 - n], "%d", &y[1 - n]);
+			}
+			x[0] = y[0]; x[1] = y[1];
+		}
+	}
+
+	if (feof(F[0]))
+		n = 1;
+	else
+		n = 0;
+
+	while (!feof(F[n]))
+	{
+		fprintf(A, "%d ", x[n]);
+		fscanf_s(F[n], "%d", &y[n]);
+		x[n] = y[n];
+	}
+	_fcloseall();
+}
+
+void razdelenie(char* name, char* name1, char* name2) 
+{
+	int x1, x2, n;
+	FILE* A, * F[2];
+	fopen_s(&A, name, "r");
+	fopen_s(&F[0], name1, "w");
+	fopen_s(&F[1], name2, "w");
+
+	if (A == NULL || F[0] == NULL || F[1] == NULL)
+	{
+		puts("error");
+		_getch();
+		exit(-1);
+	}
+	fscanf_s(A, "%d", &x1);
+	n = 0;
+	while (!feof(A)) 
+	{
+		fprintf(F[n], "%d ", x1);
+		fscanf_s(A, "%d", &x2);
+		while (!feof(A) && x1 <= x2) 
+		{
+			x1 = x2;
+			fprintf(F[n], "%d ", x1);
+			fscanf_s(A, "%d", &x2);
+		}
+		x1 = x2;
+		n = 1 - n;
+	}
+	_fcloseall();
+}
+int main() {
+	char name[] = "data1.txt";
+	char name1[] = "data2.txt";
+	char name2[] = "data3.txt";
+	int x;
+	FILE* A, *F[2];
+	random(20);
+	fopen_s(&A, name, "r");
+	fopen_s(&F[0], name1, "w");
+	fopen_s(&F[1], name2, "w");
+	if (A == NULL || F[0] == NULL || F[1] == NULL)
+	{
+		puts("error");
+		_getch();
+		exit(-1);
+	}
+	_fcloseall();
+	razdelenie(name, name1, name2);
+	//_fcloseall();
+	//fopen_s(&F[0], name1, "r");
+	fopen_s(&F[1], name2, "r");
+	fscanf_s(F[1], "%d", &x);
+	while ((!feof(F[1])) )
+	{
+		_fcloseall();
+		//fopen_s(&A, name, "w");
+		Integration(name, name1, name2);
+		//_fcloseall();
+		/*fopen_s(&A, name, "r");
+		fopen_s(&F[0],name1, "w");
+		fopen_s(&F[1], name2, "w");*/
+		razdelenie(name, name1, name2);
+		//_fcloseall();
+		//fopen_s(&F[0], name1, "r");
+		fopen_s(&F[1], name2, "r");
+		fscanf_s(F[1], "%d", &x);
+	}
+	_fcloseall();
+	puts("new file");
+	fopen_s(&A, "data1.txt", "r");
+	fscanf_s(A, "%d", &x);
+	while (!feof(A))
+	{
+		printf("%d ", x);
+		fscanf_s(A, "%d", &x);
+
+	}
+	fclose(A);
+}

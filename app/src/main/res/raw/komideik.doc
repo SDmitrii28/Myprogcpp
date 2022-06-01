@@ -1,0 +1,170 @@
+#include <iostream>
+#include <ctime>
+using namespace std;
+// формируем матрицу стоимости, рандомно, на диагонали нули
+void inputMATR(int** a, int n) {
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (i == j) {
+				a[i][j] = 0;
+			}
+			else
+				a[i][j] = rand() % 9+1;
+		}
+	}
+}
+// факториал, нужен для подсчета количества перестановок
+int fact(int n) {
+	if (n == 0) {
+		return 1;
+	}
+		if (n < 0) {
+			return 0;
+		}
+		else
+			return n * fact(n - 1);
+}
+//формируем начальную перестановку, напримео начинаем с 5 - го города, следовательно начальная перестановка будет 512346....
+void formP(int* a, int n, int k) 
+{
+	int t = 0;
+	int i = 0;
+	a[i] = k;
+	while(i<n-1)
+	{
+		i++;
+		if (t < k) 
+		{
+			a[i] = t;
+		}
+			else
+				if (t > k) 
+				{
+					a[i] = t;
+				}
+				else
+					if (t == k) {
+						a[i] = ++t;
+					}
+		t++;
+	}
+}
+// вывод матрицы стоимости
+void outputMATR(int** a, int n) {
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			cout << a[i][j] <<" ";
+		}
+		cout << endl;
+	}
+}
+// инвентируем хвост, нужен для алгоритмы дейкстры
+void invertion(int* a, int n, int i) {
+	int z, t = n-1;
+	for (int j = i + 1; j < t; j++, t--) {
+		z = a[j];
+		a[j] = a[t];
+		a[t] = z;
+	}
+}
+// алгоритм дейкстры
+void deikt(int *a, int n) {
+	int maxi, maxj, t,z;
+	bool flag = 0;
+	for (int i = n-2; i>0, flag==0; i--) {
+		if (a[i] < a[i + 1])// сравнение
+		{
+			maxi = i;// максимальный i элемент
+			flag = 1;// нужен для выхода из цикла
+		}
+	}
+	for (int j = n-1; j > maxi; j--) {
+		if (a[maxi] < a[j]) {
+			t = a[maxi];
+			a[maxi] = a[j];
+			a[j] = t;
+			invertion(a,n,maxi);
+			break;
+		}
+	}
+}
+// формируем стоимоть пути
+int Stoimost(int** a, int* p, int n) {
+	int sum = 0;
+	for (int i = 0; i < n-1; i++) {
+		sum += a[p[i]][p[i + 1]];
+	}
+	sum += a[p[n - 1]][p[0]];
+	return sum;
+}
+// вывод пути минимальной стоимости, так как пути номер города, записывается в массив
+void outMAss(int* a, int n, int k) {
+	for (int z = 0; z < n; z++) {
+		cout << a[z] << " ";
+	}
+	cout << k << " ";
+}
+// функция копирования массива, нужна для определения минимальной стоимости пути
+void copi(int* a, int* p,int n) {
+	for (int i = 0; i < n; i++) {
+		p[i] = a[i];
+	}
+}
+int main() {
+	setlocale(LC_ALL, "rus");
+	int** a, n, k;
+	int* p;// путь
+	int* Pmin;//путь , где хранится минимальная стоимоть пути
+	int min;
+	cout << "Введите количество городов"<<endl;
+	cin >> n;
+	cout << "Введите номер первого города от [0..." << n-1 <<"]" << endl;
+	cin >> k;
+
+	p = new int [n];
+
+	Pmin = new int [n];
+
+	a = new int* [n];
+	for (int i = 0; i < n; i++) 
+	{
+		a[i] = new int[n];
+	}
+	srand(time(NULL));
+	inputMATR(a, n);
+
+	cout << endl;
+	outputMATR(a, n);
+
+	cout << endl;
+	formP(p, n, k);// формируем первую перестановку
+	outMAss(p, n,k);
+	int m = Stoimost(a, p, n);// находим первыю стоимость, первой перестановки
+	cout <<"  цена = " << m <<  endl;
+	min = m;// храним в переменной min
+	copi(p, Pmin, n);
+	int c = 1;
+	while (c!=fact(n-1))// количество перестановок
+	{
+		deikt(p, n);//алгориитм дейкстры, для формирования след перестановки
+		outMAss(p, n,k);
+		m = Stoimost(a, p, n);
+		cout << "  цена = " << m << endl;
+		if (m < min) {
+			min = m;
+			copi(p, Pmin, n);
+		}
+		c++;
+	}
+	cout << "Минимальная стоимость пути" << endl;
+	outMAss(Pmin, n,k);
+	cout << "  цена = " << min << endl;
+	for (int i = 0; i < n; i++) {
+		delete a[i];
+	}
+	delete []a;
+	delete []p;
+	delete []Pmin;
+}

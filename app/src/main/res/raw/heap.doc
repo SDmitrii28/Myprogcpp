@@ -1,0 +1,59 @@
+#include <ctime>
+#include <iostream>
+using namespace std;
+//функци€€ обмена элементов
+void swap(int* a, int i,int j) {
+	int b;
+	b = a[i];
+	a[i] = a[j];
+	a[j] = b;
+}
+//функци€ протаскивани€
+void sift1(int i, int n, int* a) {
+	int j = 2 * i + 1;
+	if (j < n) {
+		if (j + 1 < n)
+			if (a[j + 1] > a[j])
+				j++;
+		if (a[j] > a[i]) {
+			swap(a, i, j);
+			i = j;
+			j = 2 * i + 1;
+			sift1(i, n, a);
+		}
+	}
+}
+//пирамидальна€ соритровка
+void HeapSort(int* a, int n) {
+	for (int i = n / 2 - 1; i >= 0; i--) {
+		sift1(i,n, a);
+	}
+	for (int i = n - 1; i >= 0; i--) {
+		swap(a, 0, i);
+		sift1(0, i, a);
+	}
+}
+//вывод массива
+void prinsMassiv(int* a, int n) {
+	for (int i = 0; i < n; i++) {
+		cout << a[i] << " ";
+	}
+}
+int main() {
+	srand(time(NULL));
+	int a[50];
+	int n = 50;
+	//создаем рандомно массив
+	for (int i = 0; i < n; i++) {
+		a[i] = rand() % 50;
+		//cin >> a[i];
+	}
+	cout << "Array: ";
+	for (int i = 0; i < n; i++) {
+		cout << a[i] << " ";
+	}
+	cout << endl;
+	HeapSort(a, n);
+	cout << "SortArray: ";
+	prinsMassiv(a, n);
+}

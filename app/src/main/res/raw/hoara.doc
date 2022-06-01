@@ -1,0 +1,65 @@
+#include <ctime>
+#include <iostream>
+using namespace std;
+typedef unsigned int UI;
+//сортировка хоара
+void sortHoara(int* a, int L, int R)
+{
+
+	int i = L, j = R;
+	int t, x;
+	x = a[(L + R) / 2];
+
+	while (i <= j)
+	{
+		while (a[i] < x)
+			i++;
+		while (a[j] > x)
+			j--;
+
+		if (i <= j)
+		{
+			if (i < j)
+			{
+				t = a[i];
+				a[i] = a[j];
+				a[j] = t;
+			}
+			i++;
+			j--;
+		}
+	}
+
+	if (i < R)
+	{
+		sortHoara(a, i, R);
+	}
+	if (L < j)
+	{
+		sortHoara(a, L, j);
+	}
+}
+
+int main() {
+	srand(time(NULL));
+	setlocale(LC_ALL, "rus");
+	int mas[100];//массив под 100 элементов
+	int n = 20;//размер массива
+	//создаем рандомно массив
+	for (int i = 0; i < n; i++) {
+		mas[i] = rand() % 100;//создаем рандомно массив в диапозоне от 0 до 100
+	}
+	cout << "Данный массив, который создан рандомно в диапозоне от [0...100]: " << endl;
+	for (int i = 0; i < n; i++) {
+		cout << mas[i] << " ";
+	}
+	cout << endl;
+	sortHoara(mas, 0, n-1);
+	cout << endl;
+	cout << "Отсортированный массив по алгоритму : "<< endl;
+	//вывод массива
+	for (int i = 0; i < n; i++) {//через цикл выводим значение каждой ячейки массива
+		cout << mas[i] << " ";//выводим через пробул элементы массива
+	}
+	cout << endl;
+}

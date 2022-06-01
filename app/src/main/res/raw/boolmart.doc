@@ -1,0 +1,99 @@
+#include "BoolMatrix.h"
+#include "BoolVector.h"
+#include <iostream>
+using namespace std;
+int main() {
+	setlocale(LC_ALL, "RUS");
+	BoolMatrix B1(4, 20),B2;
+	cout << "1) B1(4, 20):" << endl;
+	cout << B1;
+	cout << endl;
+	cout << "2) new B1:" << endl;
+	B1.Invert(0, 10, 8);
+	B1.SetUp1(1, 14, 6);
+	B1.SetUp1(2, 8, 6);
+	B1.SetNeven(3);
+	cout << B1;
+	cout << endl;
+	cout << "3) B2=B1:" << endl;
+	B2 = B1;
+	cout << B2;
+	cout << endl;
+	cout << "4) ";
+	if (B1 == B2) {
+		cout << "B1==B2" << endl;
+	}
+	else
+		cout << "B1!=B2" << endl;
+	cout << "5) new B2:" << endl;
+	B2.ShiftRightEq(0, 6);
+	B2.ShiftLeftEq(2, 6);
+	B2.SetUp0(1, 16);
+	B2.SetUp0(1, 18);
+	B2.InventEven(3);
+	cout << B2 << endl;
+	cout << "6)	B3:" << endl;
+	cout << "   Инициализируйте ее с клавиатуры матрицей размера 4?20 вида" << endl;
+	BoolMatrix B3;
+	B3.Scan(4, 20);
+	cout << endl;
+	cout << B3 << endl;
+	if (B3 == B2) {
+		cout << "    B3==B2" << endl;
+	}
+	else
+		cout << "    B3!=B2" << endl;
+	cout << "7) Создайте динамическую матрицу s из 4-х строк." << endl;
+	cout << "   Инициализируйте ее с клавиатуры следующими строками : " << endl;
+	cout << "   Создайте булеву матрицу B3(s, 4). Выведите ее на консоль" << endl;
+	char** s;
+	s = new char* [4];
+	for (int i = 0; i < 4; i++) {
+		s[i] = new char[20];
+	}
+	for (int i = 0; i < 4; i++)
+	{
+		gets_s(s[i], 20 + 1);
+
+	}
+	cout << endl;
+	BoolMatrix B4(s, 4);
+	cout << "   B4:" << endl;
+	cout << B4 << endl;
+	//////////////888888888
+	BoolMatrix C1, C2, C3, C4;
+	cout << "8) C1 = " << C1 << endl;
+	if (C1 == B1) {
+		cout << "    C1==B1" << endl;
+	}
+	else
+		cout << "    C1!=B1" << endl;
+	///////9999999999
+	C1 = B1 & B2;
+	C2 = B1 | B2;
+	C3 = B1 ^ B2;
+	C4 = ~B4;
+	cout << "9) C1=B1&B2:" << endl << C1 << endl;
+	cout << "   C2=B1|B2:" << endl << C2 << endl;
+	cout << "   C3=B1^B2:" << endl << C3 << endl;
+	cout << "   C4=~B4:" << endl << C4 << endl;
+	cout << endl;
+	cout << "10)  B1&=B2:" << endl;
+	B1 &= B2;
+	cout << B1 << endl;
+	if (B1 == C1) {
+		cout << "    C1==B1" << endl;
+	}
+	else
+		cout << "    C1!=B1" << endl;
+	cout << endl;
+	cout << "11) B1[1] = " << B1[1] << endl;
+	cout << "    B1[1][19] = " <<  B1[1][19] << ",   ";
+	cout << "B1[1][18] = " <<  B1[1][18] << endl << endl;
+	//////////////121212121212
+	BoolVector x1, x2;
+	x1 = B1.Disj();
+	x2 = B1.Xor();
+	cout << "12) B1.Disj() = " << x1 << endl;
+	cout << "    B1.Xor() = " << x2  << endl;
+}

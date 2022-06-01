@@ -1,0 +1,61 @@
+#include <stdio.h>
+#include <string.h>
+#include <conio.h>
+#include <stdlib.h>
+void TAB(int* TAB, char* p, int m)
+{
+	m = strlen(p);
+	for (int i = 0; i < 256; i++)
+	{
+		TAB[i] = m;
+	}
+	for (int i = 0; i < m - 1; i++) {
+		TAB[p[i]] = m - 1 - i;
+	}
+}
+void BM_search(char* s1, char* s2)
+{
+	int i, j, n, m, d, k;
+	int a[256];
+	n = strlen(s1);
+	m = strlen(s2);
+	TAB(a, s2, m);
+	int c = 0;
+	i = m - 1;
+	while (i < n)
+	{
+		c = 0;
+		j = m - 1;
+		d = i;
+		while (j >= 0 && s2[j] == s1[d])
+		{
+			j--;
+			d--;
+			c++;
+		}
+		k = d;
+		if (c == m)
+		{
+			printf("%d ", k + 1);
+			break;
+		}
+
+		i += a[s1[k]];
+	}
+	if (i >= n && c != m)
+	{
+		printf("nety");
+	}
+
+}
+int main() {
+	char s1[80] = "abc abbcm aagkjk assd nvnk\0";
+	char s2[30] = "ss\0";
+	//printf("%d ",strlen(s2));
+	BM_search(s1, s2);
+	printf("\n");
+	puts(s1);
+	printf("\n");
+	puts(s2);
+	_getch();
+}

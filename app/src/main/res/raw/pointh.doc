@@ -1,0 +1,332 @@
+#pragma once
+
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+class Point {
+private:
+    double x, y, z;
+
+public:
+    Point();
+    Point(double _x, double _y, double _z);
+
+    void set(int _x, int _y, int _z);   // установка значений
+   /* int get_x();     // получить значения из приватной секции
+    int get_y();
+    int get_z();
+*/
+
+    string axis();     // лежит ли точка на оси Ox(Oy, Oz);
+    string plane();   //лежит ли точка на координатной плоскости xOy, xOz, yOz;
+
+    int octant() const;    //определить октант, в котором лежит точка;
+    void one_octant(const Point& point);     //лежат ли две точки в одном октанте;
+    double distance_from_origin() const; //расстояние от начала координат;
+    void distance_OA_and_OB(const Point& point1);//сравнение двух точек(будем считать, что точка A больше чем точка B если | OA | > | OB | );
+    bool point_equality(const Point& point1);      //равенство точек;
+    bool symmetry_from_OO(const Point& point1);     //cимметричны ли две точки относительно начала координат;
+    Point multiplication(int n); //умножение точки на число;
+    void distance_to_coordinat_eaxes();        //расстояние от точки до координатных осей;
+    void symmetry_xOy_xOz_yOz(const Point& point1);    //симметричны ли две точки относительноплоскости xOy, xOz, yOz;
+    void symmetry_Ox_Oy_Oz(const Point& point1);    //симметричны ли две точки относительно оси Ox(Oy, Oz);
+    bool triangle(const Point& point1, const Point& point2);   //образуют ли три точки треугольник;
+    double triangle_area(const Point& point1, const Point& point2); //площадь треугольника, образованного тремя точками.
+
+
+    friend ostream& operator<< (ostream& out, const Point& point);
+    friend istream& operator>> (istream& in, Point& point);
+
+};
+Point::Point() {
+    set(0, 0, 0);
+}
+
+Point::Point(double _x, double _y, double _z) {
+    set(_x, _y, _z);
+}
+
+void Point::set(int _x, int _y, int _z) { //устанавливает значения
+    x = _x;
+    y = _y;
+    z = _z;
+}
+/*
+int Point::get_x() {
+    return x;
+}
+
+int Point::get_y() {
+    return y;
+}
+
+int Point::get_z() {
+    return z;
+}
+*/
+
+// лежит ли точка на оси Ox(Oy, Oz);
+string Point::axis() {
+    bool bool_z = ((x == 0) && (y == 0) && (z != 0));
+    bool bool_y = ((x == 0) && (y != 0) && (z == 0));
+    bool bool_x = ((x != 0) && (y == 0) && (z == 0));
+    bool special_case = ((x == 0) && (y == 0) && (z == 0));
+    string res;
+
+    if (bool_z) {
+        res = "Point is on Ox";
+    }
+
+    else if (bool_y) {
+        res = "Point is on Oy";
+    }
+
+    else if (bool_x) {
+        res = "Point is on Ox";
+    }
+    else if (special_case) {
+        res = "Origin";
+    }
+    else {
+        res = "Point isn't Ox, Oy, Oz";
+    }
+    return res;
+}
+
+//лежит ли точка на координатной плоскости xOy, xOz, yOz;
+string Point::plane() {
+    bool bool_y_z = ((x == 0) && (y != 0) && (z != 0));
+    bool bool_x_z = ((x != 0) && (y == 0) && (z != 0));
+    bool bool_x_y = ((x != 0) && (y != 0) && (z == 0));
+    bool special_case = ((x == 0) && (y == 0) && (z == 0));
+    string res;
+
+    if (bool_y_z) {
+        res = "Point on yOz";
+    }
+
+    if (bool_x_z) {
+        res = "Point on xOz";
+    }
+
+    if (bool_x_y) {
+        res = "Point on xOy";
+    }
+
+    if (special_case) {
+        res = "Origin";
+    }
+
+    return res;
+}
+
+//определить октант, в котором лежит точка;
+int Point::octant() const {
+    int res = 0;
+    if ((y > 0) && (x > 0) && (z > 0)) {
+        cout << "Point in 1 octant" << endl;
+        res = 1;
+    }
+    if ((y > 0) && (x < 0) && (z > 0)) {
+        cout << "Point in 2 octant" << endl;
+        res = 2;
+    }
+    if ((y < 0) && (x < 0) && (z > 0)) {
+        cout << "Point in 3 octant" << endl;
+        res = 3;
+    }
+    if ((y < 0) && (x > 0) && (z > 0)) {
+        cout << "Point in 4 octant" << endl;
+        res = 4;
+    }
+    if ((y > 0) && (x > 0) && (z < 0)) {
+        cout << "Point in 5 octant" << endl;
+        res = 5;
+    }
+    if ((y > 0) && (x < 0) && (z < 0)) {
+        cout << "Point in 6 octant" << endl;
+        res = 6;
+    }
+    if ((y < 0) && (x < 0) && (z < 0)) {
+        cout << "Point in 7 octant" << endl;
+        res = 7;
+    }
+    if ((y < 0) && (x > 0) && (z < 0)) {
+        cout << "Point in 8 octant" << endl;
+        res = 8;
+    }
+    cout << endl;
+
+    return res;
+}
+
+//находятся ли две точки в одном октанте
+void Point::one_octant(const Point& point1) {
+    if (point1.octant() == this->octant()) {
+        cout << "Two points in one octant" << endl;
+    }
+    else {
+        cout << "Two points NOT in one octant" << endl;
+    }
+    cout << endl;
+}
+
+//расстояние от начала координат;
+double Point::distance_from_origin() const {
+    double s;
+    s = sqrt((pow(x, 2) + pow(y, 2) + pow(z, 2))); //расстояние = квадратный корень из суммы квадратов координат
+    return s;
+}
+
+//сравнение двух точек(будем считать, что точка A больше чем точка B если | OA | > | OB | );
+void Point::distance_OA_and_OB(const Point& point1) {
+
+    if (this->distance_from_origin() > point1.distance_from_origin()) {
+        cout << "Distance from (0,0) first point > second point" << endl;
+    }
+    if (this->distance_from_origin() == point1.distance_from_origin()) {
+        cout << "Distance from (0,0) first point == second point" << endl;
+    }
+    if (this->distance_from_origin() < point1.distance_from_origin()) {
+        cout << "Distance from (0,0) first point < second point" << endl;
+    }
+    cout << endl;
+}
+
+
+//равны ли точки
+bool Point::point_equality(const Point& point1) {
+    if ((this->x == point1.x) && (this->y == point1.y) && (this->z == point1.z)) {
+        cout << "Points are equal" << endl;
+        return true;
+    }
+
+    else {
+        cout << "Points are NOT equal" << endl;
+        return false;
+    }
+    cout << endl;
+
+}
+
+//cимметричны ли две точки относительно начала координат;
+bool Point::symmetry_from_OO(const Point& point1) {
+    int res = 0;
+    if ((this->x == -point1.x) && (this->y == -point1.y) && (this->z == -point1.z)) {
+        res = 1;
+        cout << "Points are simmetrical about (0;0)" << endl;
+    }
+    else {
+        cout << "Points are NOT simmetrical about (0;0)" << endl;
+    }
+    cout << endl;
+    return (res == 1) ? true : false;
+}
+
+//умножение точки на число
+Point Point::multiplication(int n) {
+    Point res((this->y) * n, (this->x) * n, (this->z) * n);
+    //cout << "Point coordinates:(" << res << ")";
+   // cout << endl;
+    return res;
+}
+
+//расстояние от точки до координатных осей;
+void Point::distance_to_coordinat_eaxes() {
+    cout << "Distance to OX:";
+    cout << sqrt((pow(this->z, 2)) + (pow(this->y, 2))) << endl;
+
+    cout << "Distance to OY:";
+    cout << sqrt((pow(this->z, 2)) + (pow(this->x, 2))) << endl;
+    cout << "Distance to OZ:";
+    cout << sqrt((pow(this->y, 2)) + (pow(this->z, 2))) << endl;
+}
+
+//симметричны ли две точки относительноплоскости xOy, xOz, yOz;
+void Point::symmetry_xOy_xOz_yOz(const Point& point1) {
+    if ((this->z == -point1.z) && (this->y == point1.y) && (this->x == point1.x)) {
+        cout << "Symmetry xOy" << endl;
+    }
+    else cout << "NOT symmetry xOy" << endl;
+    if ((this->y == -point1.y) && (this->z == point1.z) && (this->x == point1.x)) {
+        cout << "Symmetry xOz" << endl;
+    }
+    else cout << "NOT symmetry xOz" << endl;
+    if ((this->x == -point1.x) && (this->y == point1.y) && (this->z == point1.z)) {
+        cout << "Symmetry yOz" << endl;
+    }
+    else cout << "NOT symmetry yOz" << endl;
+}
+//симметричны ли две точки относительно оси Ox(Oy, Oz);
+void Point::symmetry_Ox_Oy_Oz(const Point& point1) {
+    if ((this->x == point1.x) && (this->y == -point1.y) && (this->z == -point1.z)) {
+        cout << "Symmetry Ox" << endl;
+    }
+    else cout << "NOT symmetry Ox" << endl;
+    if ((this->z == point1.z) && (this->y == -point1.y) && (this->x == -point1.x)) {
+        cout << "Symmetry Oz" << endl;
+    }
+    else cout << "NOT symmetry Oz" << endl;
+    if ((this->y == point1.y) && (this->z == -point1.z) && (this->x == -point1.x)) {
+        cout << "Symmetry Oy" << endl;
+    }
+    else cout << "NOT symmetry Oy" << endl;
+}
+//образуют ли три точки треугольник;
+bool Point::triangle(const Point& point1, const Point& point2) {
+    double ab, bc, ca;
+    int res;
+    ab = sqrt(pow((this->x - point1.x), 2) + pow((this->y - point1.y), 2) + pow((this->z - point1.z), 2));
+
+    bc = sqrt(pow((point1.x - point2.x), 2) + pow((point1.y - point2.y), 2) + pow((point1.z - point2.z), 2));
+    ca = sqrt(pow((point2.x - this->x), 2) + pow((point2.y - this->y), 2) + pow((point2.z - this->z), 2));
+
+    if ((ab > fabs(bc - ca)) && (bc > fabs(ca - ab)) && (ca > fabs(ab - bc))) {
+        res = 1;
+        cout << "3 points form a triangle";
+    }
+    else {
+        res = 0;
+        cout << "3 points DO NOT form a triangle";
+    }
+    cout << endl;
+    return (res == 1) ? 1 : 0;
+}
+
+//площадь треугольника, образованного тремя точками.
+double Point::triangle_area(const Point& point1, const Point& point2) {
+    double ab, bc, ca;
+    double p;
+    double s;
+    Point point(this->x, this->y, this->z);
+    if (point.triangle(point1, point2)) {
+        ab = sqrt(pow((this->x - point1.x), 2) + pow((this->y - point1.y), 2) + pow((this->z - point1.z), 2));
+        bc = sqrt(pow((point1.x - point2.x), 2) + pow((point1.y - point2.y), 2) + pow((point1.z - point2.z), 2));
+        ca = sqrt(pow((point2.x - this->x), 2) + pow((point2.y - this->y), 2) + pow((point2.z - this->z), 2));
+        p = (ab + bc + ca) / 2;
+        s = sqrt(p * (p - ab) * (p - bc) * (p - ca));
+        cout << "Triangle area:";
+        cout << s;
+        cout << endl;
+    }
+    else {
+        s = 0;
+    }
+    return s;
+}
+
+
+
+ostream& operator<< (ostream& out, const Point& point) {
+    out << "Point(" << point.x << "," << point.y << "," << point.z << ")";
+    return out;
+}
+istream& operator>> (istream& in, Point& point) {
+    in >> point.x;
+    in >> point.y;
+    in >> point.z;
+
+    return in;
+}

@@ -1,0 +1,578 @@
+#pragma once
+#include <iostream>
+#include <cmath>
+#include <cstring>
+using namespace std;
+typedef unsigned char UC;
+
+class BoolVector
+{
+private:
+    UC* bv;
+    int n, m;    	//n -длина булева вектора,
+                       //m - количество элементов в массиве bv
+                       //связь n и m: m=n/8 если n%8=0;
+                       //         	       m=n/8+1, если n%8!=0
+
+    int Input(const char*, int, int, int);		//формирование элемента массива bv
+    void Output(int, int);                   		 //вывод элемента массива bv
+
+public:
+
+    //конструкторы, деструктор, перегрузка оператора присвоения
+    BoolVector();
+    BoolVector(int n1);          			//n1 - длина булева вектора
+    BoolVector(const char* s);
+    BoolVector(const char* s, int n);			//strlen(s)!=n
+    BoolVector(const BoolVector&);
+    BoolVector operator= (const BoolVector&);
+    ~BoolVector();
+
+    //ввод, вывод, вес, определение k-й компоненты
+    void Scan(int);
+    void Print();
+    int Weight();
+    UC operator[](int);
+
+    //сравнение
+    bool operator== (BoolVector&);
+    bool operator!= (BoolVector&);
+    bool operator< (BoolVector& y);   	//x<y если x[i]<=y[i]
+    bool operator> (BoolVector& y);		 //x>y если x[i]>=y[i]
+
+   //побитовые операции
+    BoolVector operator & (BoolVector& x);		//создается новый вектор
+    BoolVector& operator &=(BoolVector& x);		//изменяется *this
+    BoolVector operator |(BoolVector& x);			//создается новый вектор
+    BoolVector& operator |=(BoolVector& x);		//изменяется *this
+    BoolVector operator ^(BoolVector& x);			//создается новый вектор
+    BoolVector& operator ^=(BoolVector& x);		//изменяется *this
+    BoolVector operator ~();						//изменяется *thi
+    BoolVector operator <<(int);					//создается новый вектор
+    BoolVector& operator <<=(int);				//изменяется *this
+    BoolVector operator >>(int);					//создается новый вектор
+    BoolVector operator >>=(int);				//изменяется *this
+
+
+    //Изменение одной компоненты вектора
+    BoolVector SetUp1(int pos);        	//установить в 1 компоненту pos
+    BoolVector SetUp0(int pos);        	//сбросить в 0 компоненту pos
+    BoolVector Invert(int pos);           	//инвертировать компоненту pos
+
+    //Изменение нескольких компонент вектора
+    BoolVector SetUp1(int kol, int pos);
+    //установить kol компонент начиная с позиции pos, изменяется *this
+    BoolVector SetUp0(int kol, int pos);
+    //сбросить  kol компонент начиная с позиции pos, изменяется *this
+    BoolVector Invert(int kol, int pos);
+    //инвертировать kol компонент начиная с позиции pos, изменяется *this
+
+    friend ostream& operator<< (ostream& r, BoolVector& V);
+    friend istream& operator>> (istream& r, BoolVector& V);
+};
+int BoolVector::Input(const char* s, int i_bv, int i_s, int k)
+//формирование эл-та bv[i_bv] массива bv
+//i_s - индекс начала фрагмента массива s, который используется для 
+//формирования bv[i_bv]
+//количество значащих цифр в числе bv[i_bv]/
+{
+    UC mask = 1;  mask <<= (k - 1);
+    bv[i_bv] = 0;
+
+    for (int i = 0; i < k; mask >>= 1, i++, i_s++)
+        if (s[i_s] == '1')  bv[i_bv] |= mask;
+
+    return i_s;
+}
+
+
+void BoolVector::Output(int i_bv, int k)        //вывод одного эл-та массива bv
+{
+    UC mask = 1;  mask <<= (k - 1);
+    for (int i = 0; i < k; i++, mask >>= 1)
+        if (bv[i_bv] & mask) putchar('1');
+        else putchar('0');
+}
+
+BoolVector::BoolVector()
+{
+    n = 0; m = 1;
+    bv = new UC[1];
+    bv[0] = 0;
+}
+
+BoolVector::BoolVector(int N) {
+    n = N;//N - длина булева вектора
+    m = N / 8;
+    int k = N % 8;
+    if (k) {
+        m++;
+    }
+    bv = new UC[m];
+    for (int i = 0; i < m; i++) {
+        bv[i] = 0;
+    }
+}
+BoolVector::BoolVector(const char* s)
+{
+    n = strlen(s);
+    m = n / 8;
+    int k = n % 8;
+    if (k)
+    {
+        m++;
+    }
+    bv = new UC[m];
+    int i_s = 0, i_bv = 0;
+    if (k)
+    {
+        i_s = Input(s, i_bv, i_s, k);
+        i_bv++;
+    }
+    while (i_s < n)
+    {
+        i_s = Input(s, i_bv, i_s, 8);
+        i_bv++;
+    }
+}
+BoolVector::BoolVector(const char* s, int n1) {
+    int x;
+    if (strlen(s) > n1) {
+        n = strlen(s);
+    }
+    else
+        n = n1;
+    m = n / 8;
+    int k = n % 8;
+    if (k)
+    {
+        m++;
+    }
+    bv = new UC[m];
+    for (int i = 0; i < m; i++) {
+        bv[i] = 0;
+    }
+    int i;
+    for (int j = strlen(s) - 1, i = 0; j >= 0; j--, i++)
+    {
+        if (s[j] == '1')
+        {
+            SetUp1(i);
+        }
+    }
+}
+
+BoolVector::BoolVector(const BoolVector& x) {
+    n = x.n;
+    m = x.m;
+    bv = new UC[m];
+    for (int i = 0; i < m; i++) {
+        bv[i] = x.bv[i];
+    }
+}
+BoolVector BoolVector::operator= (const BoolVector& X) {
+    if (this != &X)
+    {
+        delete[] bv;
+        n = X.n;
+        m = X.m;
+        bv = new UC[m];
+        for (int i = 0; i < m; i++) {
+            bv[i] = X.bv[i];
+        }
+    }
+    return *this;
+}
+BoolVector::~BoolVector() {
+    delete[]bv;
+}
+void BoolVector::Scan(int N)
+{
+    char* s = new char[N + 1];
+    cout << "enter booleean vector of lenght " << N << endl;
+    gets_s(s, N + 1);
+    BoolVector T(s);
+    *this = T;
+    delete[]s;
+}
+void BoolVector::Print() {
+    int k = n % 8;
+    int i_bv = 0;
+    if (k) {
+        Output(i_bv, k);
+        i_bv++;
+    }
+    while (i_bv < m) {
+        Output(i_bv, 8);
+        i_bv++;
+    }
+}
+int BoolVector::Weight()
+{
+    UC mask;
+    int w = 0;
+    for (int i = 0; i < m; i++)
+    {
+        mask = 1;
+        for (mask <<= 7; mask != 0; mask >>= 1)
+        {
+            if (bv[i] & mask)
+            {
+                w++;
+            }
+        }
+    }
+    return w;
+}
+UC BoolVector::operator[](int i)
+{
+    UC mask = 1;
+    int M = i / 8, k = i % 8;
+    mask <<= k;
+    if (bv[m - 1 - M] & mask)
+    {
+        return '1';
+    }
+    else
+        return '0';
+}
+bool BoolVector::operator==(BoolVector& X) {
+    int c = 0;
+    if (n != X.n) {
+        return false;
+    }
+    for (int i = 0; i < m; i++) {
+        if (bv[i] == X.bv[i])
+        {
+            c++;
+        }
+    }
+    if (c == m) {
+        return true;
+    }
+    else
+        return false;
+}
+bool BoolVector::operator!=(BoolVector& X) {
+    int c = 0;
+    if (n != X.n) {
+        return true;
+    }
+    for (int i = 0; i < m; i++) {
+        if (bv[i] == X.bv[i])
+        {
+            c++;
+        }
+    }
+    if (c != m) {
+        return true;
+    }
+    else
+        return false;
+}
+bool BoolVector::operator<(BoolVector& X) {
+    if (n <= X.n) {
+        return false;
+    }
+    for (int i = 0; i < m; i++) {
+        if (bv[i] <= X.bv[i])
+        {
+            return false;
+        }
+        return true;
+    }
+}
+bool BoolVector::operator>(BoolVector& X) {
+    if (n >= X.n) {
+        return true;
+    }
+    for (int i = 0; i < m; i++) {
+        if (bv[i] >= X.bv[i])
+        {
+            return true;
+        }
+        return false;
+    }
+}
+
+BoolVector  BoolVector::operator& (BoolVector& Y) 		//x=(*this)&y//определяем N - размер результата
+{
+    int N = n, j_res = m - 1;
+    if (N > Y.n)
+    {
+        N = Y.n;
+        j_res = Y.m - 1;
+    }
+
+    //нахождение конъюнкции:
+    BoolVector Res(N);
+    int j, j_Y, i_Y;
+    for (j = m - 1, i_Y = Y.m - 1; j_res >= 0; j--, i_Y--, j_res--)
+        Res.bv[j_res] = bv[j] & Y.bv[i_Y];
+
+    return Res;
+}
+
+BoolVector& BoolVector::operator&= (BoolVector& Y)	//*this=(*this)&y 
+{
+    BoolVector Res = (*this) & Y;
+    *this = Res;
+    return *this;
+}
+BoolVector BoolVector::operator |(BoolVector& Y)			//создается новый вектор
+{
+
+    int N = n, j_res = m - 1;
+    if (N < Y.n)
+    {
+        N = Y.n;
+        j_res = Y.m - 1;
+    }
+    //нахождение дизъюнкции:
+    BoolVector Res(N);
+    int j, i_Y;
+    for (j = m - 1, i_Y = Y.m - 1; i_Y >= 0 && j >= 0; j--, i_Y--, j_res--)
+    {
+        Res.bv[j_res] = bv[j] | Y.bv[i_Y];///////101100010
+    }
+    while (j >= 0) {
+        Res.bv[j_res] = bv[j];
+        j--;
+        j_res--;
+    }
+    while (i_Y >= 0) {
+        Res.bv[j_res] = Y.bv[i_Y];
+        i_Y--;
+        j_res--;
+    }
+    return Res;
+}
+BoolVector& BoolVector::operator |=(BoolVector& Y)		//изменяется *this
+{
+    BoolVector Res = (*this) | Y;
+    (*this) = Res;
+    return *this;
+}
+BoolVector BoolVector::operator ^(BoolVector& Y)			//создается новый вектор
+{
+
+    int N = n, j_res = m - 1;
+    if (N < Y.n)
+    {
+        N = Y.n;
+        j_res = Y.m - 1;
+    }
+    //xor
+    BoolVector Res(N);
+    int j, i_Y;
+    for (j = m - 1, i_Y = Y.m - 1; i_Y >= 0 && j >= 0; j--, i_Y--, j_res--)
+    {
+        Res.bv[j_res] = bv[j] ^ Y.bv[i_Y];///////101100010
+    }
+    while (j >= 0) {
+        Res.bv[j_res] = bv[j];
+        j--;
+        j_res--;
+    }
+    while (i_Y >= 0) {
+        Res.bv[j_res] = Y.bv[i_Y];
+        i_Y--;
+        j_res--;
+    }
+    return Res;
+}
+BoolVector& BoolVector::operator ^=(BoolVector& Y)	//изменяется *this
+{
+    BoolVector Res = (*this) ^ Y;
+    *this = Res;
+    return *this;
+}
+BoolVector BoolVector::operator ~()						//изменяется *this
+{
+    for (int i = 0; i < m; i++)
+    {
+        bv[i] = ~bv[i];
+    }
+    return *this;
+}
+BoolVector BoolVector::operator <<(int k)					//создается новый вектор
+{
+    BoolVector r(n);
+    r = *this;
+    int i = r.n - 1;
+
+    for (int t = i - k; t >= 0; t--, i--)
+    {
+        if (r.operator[](t) == '1')
+        {
+            r.SetUp1(i);
+        }
+        else
+        {
+            r.SetUp0(i);
+        }
+    }
+
+    while (i >= 0)
+    {
+        r.SetUp0(i);
+        i--;
+    }
+    return r;
+}
+BoolVector& BoolVector::operator <<=(int k)				//изменяется *this
+{
+    (*this) = (*this) << k;
+    return *this;
+}
+
+///////////////////////////////////////////////////
+BoolVector BoolVector::operator >>(int k)					//создается новый вектор
+{
+    BoolVector r(n);
+    r = (*this);
+    int i;
+
+    int t = k;
+
+    for (i = 0; t < r.n; i++, t++)
+    {
+        if (r.operator[](t) == '1')
+        {
+            r.SetUp1(i);
+        }
+        else
+        {
+            r.SetUp0(i);
+        }
+    }
+
+    while (i < r.n)
+    {
+        r.SetUp0(i);
+        i++;
+    }
+    return r;
+
+}
+BoolVector BoolVector::operator >>=(int k)
+{
+    (*this) = (*this) >> k;
+    return *this;
+}
+ostream& operator<< (ostream& r, BoolVector& V)
+{
+    V.Print();
+    return r;
+}
+istream& operator>> (istream& r, BoolVector& V)
+{
+    int N;
+    cout << "enter N" << endl;
+    cin >> N;
+    char* s = new char[N + 1];
+    cout << "enter booleean vector of lenght" << N << endl;
+    //gets_s(s, N + 1);
+    r >> s;
+    BoolVector T(s);
+    V = T;
+    delete[]s;
+    return r;
+}
+BoolVector BoolVector::SetUp1(int pos)
+{
+    if (pos < 0 || pos >= n)
+    {
+        cout << "incorrect index pos" << endl;
+        return *this;
+    }
+    else
+    {
+        UC mask = 1;
+        int M = pos / 8, k = pos % 8;
+        mask <<= k;
+        bv[m - 1 - M] |= mask;
+        return *this;
+    }
+}
+BoolVector BoolVector::SetUp0(int pos)
+{
+    if (pos < 0 || pos >= n)
+    {
+        cout << "incorrect index pos" << endl;
+        return *this;
+    }
+    else
+    {
+        UC mask = 1;
+        int M = pos / 8, k = pos % 8;
+        mask <<= k;
+        mask = ~mask;
+        bv[m - 1 - M] &= mask;
+        return *this;
+    }
+}
+BoolVector BoolVector::Invert(int pos)
+{
+    if (pos < 0 || pos >= n)
+    {
+        cout << "incorrect index pos" << endl;
+        return *this;
+    }
+    else
+    {
+        UC mask = 1;
+        int M = pos / 8, k = pos % 8;
+        mask <<= k;
+        bv[m - 1 - M] ^= mask;
+        return *this;
+    }
+}
+BoolVector BoolVector::SetUp1(int kol, int pos)
+{
+    if (pos < 0 || pos >= n)
+    {
+        cout << "incorrect index pos" << endl;
+        return *this;
+    }
+    else
+    {
+        for (int i = pos; i < pos + kol; i++)
+        {
+            SetUp1(i);
+        }
+        return *this;
+    }
+}
+BoolVector BoolVector::SetUp0(int kol, int pos)
+{
+    if (pos < 0 || pos >= n)
+    {
+        cout << "incorrect index pos" << endl;
+        return *this;
+    }
+    else
+    {
+        for (int i = pos; i < pos + kol; i++)
+        {
+            SetUp0(i);
+        }
+        return *this;
+    }
+}
+BoolVector BoolVector::Invert(int kol, int pos)
+{
+    if (pos < 0 || pos >= n)
+    {
+        cout << "incorrect index pos" << endl;
+        return *this;
+    }
+    else
+    {
+        for (int i = pos; i < pos + kol; i++)
+        {
+            Invert(i);
+        }
+        return *this;
+    }
+}

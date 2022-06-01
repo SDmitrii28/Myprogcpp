@@ -1,0 +1,239 @@
+#pragma once
+#include <iostream>
+#include <cmath>
+using namespace std;
+class rectangle {
+private:
+	int x, y;
+	int a, b;
+public:
+	rectangle();//конструктор по умолчанию
+	rectangle(int, int);// конструктор  с  аргументом
+	void input();// ввод
+	void output();// вывод
+	int S();//площадь прямоугольника
+	int P();//периметр прямоугольника
+	double RadOp();//радиус описаной окружности
+	bool kv();//проверка является ли квадратом
+	rectangle operator*=(int);// уможние длин сторон на число
+	bool operator==(rectangle);// проверка на равентсво 
+	bool podobie(rectangle);//проверка на подобие
+	void CentrOp();// цент описаной окружности
+	bool crossing(rectangle);// пересекаются или нет
+	void NewRectCross(rectangle);//нахождение прямоугольника пересечения
+};
+rectangle::rectangle() {
+	x = 0;
+	x = 0;
+	a = 1;
+	b = 1;
+}
+rectangle::rectangle(int a1, int b1) {
+	a = a1;
+	b = b1;
+}
+void rectangle::input() {
+	cout << "Введите координаты точки А" << endl;
+	cout << "x: ";
+	cin >> x;
+	cout << endl << "y: ";
+	cin >> y;
+	cout << endl;
+	cout << "Введите длины сторон" << endl;
+	cout << "a: ";
+	cin >> a;
+	if (a == 0) {
+		cout << "Введите еще раз a:" << endl;
+		cin >> a;
+	}
+	cout << endl << "b: ";
+	cin >> b;
+	if (b == 0) {
+		cout << "Введите еще раз b:" << endl;
+		cin >> b;
+	}
+	cout << endl;
+
+}
+void rectangle::output() {
+	cout << "Координаты точки А(" << x << "," << y << ")" << endl;
+	cout << "a=" << a << endl;
+	cout << "b=" << b << endl;
+}
+int rectangle::S() {
+	return a * b;
+}
+int rectangle::P() {
+	return 2 * (a + b);
+}
+double rectangle::RadOp() {
+	return sqrt(pow(a, 2) + pow(b, 2));
+}
+bool rectangle::kv() {
+	if (a == b) 
+	{
+		return true;
+	}
+	return false;
+}
+rectangle rectangle::operator*=(int k) {
+	this->a *= k;
+	this->b *= k;
+	return *this;
+}
+bool rectangle::operator==(rectangle z) {
+	if ((a == z.a && b == z.b) || (a == z.b && b == z.a)) {
+		return true;
+	}
+	return false;
+}
+bool rectangle::podobie(rectangle z) {
+	if ((z.a / a) == (z.b / b)) {
+		return true;
+	}
+	return false;
+}
+void rectangle::CentrOp() {
+	int x1 = x + b;
+	int y1 = y - a;
+	cout << "Центр описаной окружности O(" << (x1+x) / 2. << "," << (y1+y) / 2. << ")" << endl;
+}
+bool rectangle::crossing(rectangle z) 
+{
+	int x1 = x + b;
+	int y1 = y - a;
+	int x2 = z.x + z.b;
+	int y2 = z.y - z.a;
+	if (x > x2 || x1 < z.x || y < y2 || y1 > z.y) {
+		return false;
+	}
+		return true;
+}
+void rectangle::NewRectCross(rectangle z) {
+	rectangle r;
+	int x0, y0, a0, b0;
+	int x1 = x + b;
+	int y1 = y - a;
+	int x2 = z.x + z.b;
+	int y2 = z.y - z.a;
+	bool f = false;
+	if (x<x2 && y>y2 && z.y >= y && z.x<=x && x2<=x1){
+		x0=x;
+		y0=y;
+		a0 = y - y2;
+		b0 = x2 - x;
+		f = true;
+	}
+	else
+		if (x2 > x&& y >= z.y && y1 < y2 && z.x <= x && x2 <= x1) {
+			x0 = x;
+			y0 = z.y;
+			a0 = z.y - y2;
+			b0 = x2 - x;
+			f = true;
+		}
+		else
+			if ((x2 > x&& z.y > y1 && y2 <y1 && z.x <= x && x2 <= x1))
+			{
+				x0 = x;
+				y0 = z.y;
+				a0 = z.y - y1;
+				b0 = x2 - x;
+				f = true;
+			}
+			else/////////////////
+				if (z.x>x && y>y2 && z.y>y&& x2 < x1) {
+					x0 = z.x;
+					y0 = y;
+					a0 = y - y2;
+					b0 = x2 - x;
+					f = true;
+				}
+				else
+					if (z.x > x && y > z.y&& y1 < y2 && x2<x1 ) {
+						x0 = z.x;
+						y0 = z.y;
+						a0 = z.a;
+						b0 = z.b;
+						f = true;
+					}
+					else
+						if ((z.x > x && z.y > y1 && y2 < y1 && x2 < x1))
+						{
+							x0 = z.x;
+							y0 = z.y;
+							a0 = z.y - y1;
+							b0 = x2 - x;
+							f = true;
+						}
+						else////////////////////
+							if (x<z.x && y>y2 && z.y > y && x1<x2) {
+								x0 = z.x;
+								y0 = y;
+								a0 = y - y2;
+								b0 = x1 - z.x;
+								f = true;
+							}
+							else
+								if (x<z.x  && y > z.y && y1 < y2 && x1 < x2) {
+									x0 = z.x;
+									y0 = z.y;
+									a0 = z.y - y2;
+									b0 = x1 - z.x;
+									f = true;
+								}
+								else
+									if ((x<z.x  && z.y > y1 && y2 < y1 && x1 < x2))
+									{
+										x0 = z.x;
+										y0 = z.y;
+										a0 = z.y - y1;
+										b0 = x1 - z.x;
+										f = true;
+									}
+									else/////////////////////
+										if (y>y2 && z.y > y && z.x < x && x2 > x1 && y2>y1) {
+											x0 = x;
+											y0 = y;
+											a0 = y - y2;
+											b0 = b;
+											f = true;
+										}
+										else
+											if (y > z.y && y1 < y2 && z.x < x && x2 > x1) {
+												x0 = x;
+												y0 = z.y;
+												a0 = z.y - y2;
+												b0 = b;
+												f = true;
+											}
+											else
+												if (z.y > y1&& y2 < y1 && z.x < x && x2 > x1 && y>z.y)
+												{
+													x0 = x;
+													y0 = z.y;
+													a0 = z.y - y1;
+													b0 = b;
+													f = true;
+												}
+												else////////////////////
+													if (x > z.x&& y<z.y && x2>x1&& y2 < y1) {
+														x0 = x;
+														y0 = y;
+														a0 = a;
+														b0 = b;
+														f = true;
+													}
+													else
+														cout<< "not rect";
+													
+
+	if (f == true) 
+	{
+		r.x = x0;
+		r.y = y0;
+		r.a = a0;
+		r.b = b0;
+		r.output();
+	}
+}

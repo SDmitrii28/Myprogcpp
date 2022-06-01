@@ -1,0 +1,47 @@
+#include <ctime>
+#include <iostream>
+using namespace std;
+typedef unsigned int UI;
+///сортировка пузырьком
+void sortPuz(int* a, int n)
+{
+	int i, j, t;
+	for (j = 1; j <= n - 1; j++)
+	{
+		for (i = 0; i < n - j; i++)
+		{
+			if (a[i] > a[i + 1])
+			{
+				t = a[i];
+				a[i] = a[i + 1];
+				a[i + 1] = t;
+			}
+		}
+	}
+	//for (i = 0; i < n; i++) {
+	//	cout << a[i] << " ";
+	//}
+}
+int main() {
+	srand(time(NULL));
+	setlocale(LC_ALL, "rus");
+	int mas[100];//массив под 100 элементов
+	int n = 20;//размер массива
+	//создаем рандомно массив
+	for (int i = 0; i < n; i++) {
+		mas[i] = rand() % 100;//создаем рандомно массив в диапозоне от 0 до 100
+	}
+	cout << "Данный массив, который создан рандомно в диапозоне от [0...100]: " << endl;
+	for (int i = 0; i < n; i++) {
+		cout << mas[i] << " ";
+	}
+	cout << endl;
+	sortPuz(mas, n);
+	cout << endl;
+	cout << "Отсортированный массив по алгоритму : "<< endl;
+	//вывод массива
+	for (int i = 0; i < n; i++) {//через цикл выводим значение каждой ячейки массива
+		cout << mas[i] << " ";//выводим через пробул элементы массива
+	}
+	cout << endl;
+}

@@ -1,0 +1,99 @@
+#include <iostream>
+#include "Bulvector.h"
+using namespace std;
+int main() {
+	setlocale(LC_ALL, "RUS");
+	BoolVector B1, B2(10), B3("111011101110"), B4("111011101110", 10), B5("111011101110", 16);
+	cout << "1) Создайте пять объектов BoolVector :" << endl;
+	cout << "   Выведите их на консоль." << endl;
+	cout << "   B1: " << B1 << endl;
+	cout << "   B2: " << B2 << endl;
+	cout << "   B3: " << B3 << endl;
+	cout << "   B4: " << B4 << endl;
+	cout << "   B5: " << B5 << endl << endl;
+	cout << "2) Найдите вес B3 и B5. Убедитесь, что B3 и B5 не равны." << endl;
+	//in >> z;
+	cout << "   Вес B3=" << B3.Weight() << endl;
+	cout << "   Вес B5=" << B5.Weight() << endl;
+	if (B3 != B5)
+	{
+		cout << "   B3!=B5" << endl;
+	}
+	cout << endl;
+	cout << "3) Создайте  вектор B6, инициализируя его при объявлении вектором B5." << endl;
+	BoolVector B6;
+	B6 = B5;
+	cout << "   Выведите B5  и B6 на экран." << endl;
+	cout << "   B5: " << B5 << endl;
+	cout << "   B6: " << B6 << endl;
+	cout << endl;
+	cout << "4) Инициализируйте вектор B2, введя с клавиатуры вектор 1001100111." << endl;
+	cout << "   ";
+	B2.Scan(10);
+	cout << "   Выведите B2 на экран." << endl;
+	cout << "   B2 = " << B2 << endl;
+	cout << endl;
+	cout << "5) Инициализируйте B1 вектором B2. Выведите B1 на экран. Сравните векторы B1  и B2." << endl;
+	B1 = B2;
+	cout << "   B1 = " << B1 << endl;
+	if (B1 == B2) {
+		cout << "   B1 == B2" << endl;
+	}
+	cout << endl;
+	cout << "6) Найдите V1=B1&B3, V2=B1|B3, V3=B1^B3. Выведите их на экран." << endl;
+	BoolVector V1, V2, V3;
+	V1 = B1 & B3;
+	V2 = B1 | B3;
+	V3 = B1 ^ B3;
+	cout << "   V1=B1&B3 = " << V1 << endl;
+	cout << "   V2=B1|B3 = " << V2 << endl;
+	cout << "   V3=B1^B3 = " << V3 << endl;
+	cout << endl;
+	cout << "7) Найдите и выведите на экран B1&=B3. Сравните с V1" << endl;
+	B1 &= B3;
+	cout << "   B1&=B3: " << B1 << endl;
+	if (B1 == V1) {
+		cout << "   B1==V1" << endl;
+	}
+	cout << endl;
+	cout << "8) Найдите и выведите на экран B2|=B3. Сравните с V2." << endl;
+	B2 |= B3;
+	cout << "   B2|=B3: " << B2 << endl;
+	if (B2 == V2) {
+		cout << "   B2==V2" << endl;
+	}
+	cout << endl;
+	cout << "9) Инвертируйте  B1. Найдите B1[4] и B1[5]." << endl;
+	cout << "   B1 = " << B1 << endl;
+	~B1;
+	cout << "   ~B1 = " << B1 << endl;
+	cout << "   B1[4] = " << B1[4] << " B1[5] = " << B1[5] << endl;
+	cout << endl;
+	cout << "10) Установите 11-ю компоненту вектора B1. Сбросьте 7-ю компоненту B1." << endl;
+	cout << "    Инвертируйте 9-ю компоненту B1. Выведите получившийся вектор на экран." << endl;
+	B1.SetUp1(11);
+	B1.SetUp0(7);
+	cout << "    B1.SetUp0(7): " << B1 << endl;
+	B1.Invert(9);
+	cout << "    B1.Invert(9): " << B1 << endl;
+	cout << endl;
+	cout << "11) Установите три компоненты вектора B1, начиная с 5-й." << endl;
+	cout << "    Инвертируйте три компоненты B1, начиная с 1-й. выведите получившийся вектор на экран." << endl;
+	cout << "    B1: " << B1 << endl;
+	B1.SetUp1(3, 5);
+	cout << "    B1.SetUp1(3, 5): " << B1 << endl;
+	B1.Invert(3,1);
+	cout << "    B1.Invert(3,1): " << B1 << endl;
+	cout << endl;
+	cout << "12) Найдите V4=B1<<4  и  B1>>=4. Сравните V1 и B1." << endl;
+	cout << "    B1: " << B1 << endl;
+	BoolVector V4;
+	V4 = B1 << 4;
+	cout << "    V4=B1<<4: " << V4 << endl;
+	B1 >>= 4;
+	cout << "    B1 >> 4: " << B1 << endl;
+	if (V4 != B1) {
+		cout << "    V4!=B1" << endl;
+	}
+	cout << endl;
+}

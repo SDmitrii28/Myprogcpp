@@ -1,0 +1,388 @@
+#pragma once
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <string.h>
+#include <iostream>
+using namespace std;
+
+class Node
+{
+    int key;
+    Node* prev, * next;
+
+public:
+    Node() 
+    { 
+        key = 0; 
+        prev = NULL; 
+        next = NULL;
+    }
+    Node(int k, Node* Pr, Node* N)
+    {
+        key = k; prev = Pr; next = N;
+    }
+    int GetKey() { return key; }
+    //???
+    //Node* Prev() { return prev; }
+    //Node* Next() { return next; }
+    friend class List;
+};
+
+class List
+{
+    Node* head, * tail;
+
+public:
+    List();
+    List(int); 			//формирование списка из n случайных элементов
+    List(int*, int);  	//формирование списка из массива чисел
+    List(const List&);
+    ~List();
+    List& operator= (const List&);
+
+    void AddAfter(int, Node*);   	//добавление узла после заданного
+    void AddToHead(int);   		// добавление эл-та в голову
+    void AddToTail(int);   		//добавление эл-та в хвост
+    void AddToHead(List);   	//добавление списка в голову
+    void AddToTail(List);   		//добавление списка в хвост
+
+    void Del(Node*);   			//удаление заданного узла
+    void DelHead();    			//удаление реальной головы
+    void DelTail();   			 //удаление реального хвоста
+
+    Node* FindKey(int);   	//поиск по ключу. Возвращает указатель на
+                    //узел, хранящий ключ или 0, если такого 
+                    //ключа в списке нет
+    Node* FindPos(int);	//поиск по позиции. Возвращает указатель 
+                        //на узел, в данной позиции или 0, если в
+                        //списке pos элементов
+    Node* Max(); 		//нахождение максимального эл-та списка
+    Node* Min(); 		//нахождение минимального эл-та списка
+    bool Empty();       	//проверка списка на пустоту
+    bool NotEmpty();    //проверка списка на непустоту
+    void Clear(); 		//очистка списка. Уничтожает все, кроме 
+                //фиктивной головы и хвоста
+    bool operator == (List);  		//проверка равенства списков
+    bool operator != (List);  		//проверка неравенства списков
+    void Scan(int);		//ввод списка из n элементов с клавиатуры
+    void Print();      	//вывод списка на консоль
+    friend ostream& operator<< (ostream& r, List& X);
+    friend istream& operator>> (istream& r, List& X);
+    int SizeList();
+    int InputFindPosKey(int);
+    int InputFindKey(int);
+    void AddAfterPos(int, int);
+
+};
+
+List::List() {
+    head = new Node;
+    tail = new Node(-1, head, NULL);
+    head->next= tail;
+}
+List::List(int n) {
+    head = new Node;
+    tail = new Node(-1, head, NULL);
+    head->next = tail;
+    int x;
+    for (int i = 0; i < n; i++) {
+        x = rand() % 100;
+        AddToTail(x);
+    }
+
+}
+List::List(int* a, int n) {
+    head = new Node;
+    tail = new Node(-1, head, NULL);
+    head->next = tail;
+    for (int i = 0; i < n; i++) {
+        AddToTail(a[i]);
+    }
+}
+List::List(const List& X) {
+    head = new Node;
+    tail = new Node(-1, head, NULL);
+    head->next = tail;
+    Node* q=X.head->next;
+    while (q != X.tail) {
+        AddToTail(q->key);
+        q = q->next;
+    }
+}
+List::~List() {
+    Clear();
+    delete head;
+    delete tail;
+
+}
+List& List::operator= (const List&X) {
+    if (this != &X) {
+        Clear();
+        Node* q = X.head->next;
+        while (q != X.tail) {
+            AddToTail(q->key);
+            q = q->next;
+        }
+    }
+    return *this;
+}
+void List::AddAfter(int k, Node*pr) {
+    Node* q = new Node;
+    q->key = k;
+    q->next = pr->next;
+    q->prev = pr;
+    pr->next = q;
+    q->next->prev = q;
+
+}
+void List::AddToHead(int k)
+{
+    AddAfter(k, head);
+}
+void List::AddToTail(int k)
+{
+    AddAfter(k, tail->prev);
+}
+void List::AddToTail(List X) {
+    Node* q = X.head->next;
+    while (q != X.tail)
+    {
+        AddAfter(q->key, tail->prev);
+        q = q->next;
+    }
+}
+void List::AddToHead(List X) {
+    Node* q = X.tail->prev;
+    while (q != X.head)
+    {
+        AddAfter(q->key, head);
+        q = q->prev;
+    }
+}
+void List::Del(Node*p) {
+   /* p->prev->next = p->next;
+    p->next->prev = p->prev;
+    delete p;*/
+    Node* t1, * t2;
+    t1 = p->prev;
+    t2 = p->next;
+    t1->next = t2;
+    t2->prev = t1;
+    delete p;
+
+}
+void List::DelHead() {
+    if (head->next == tail)
+        cout << "list is empty";
+    else
+        Del(head->next);
+}
+void List::DelTail() {
+    if (head->next == tail)
+        puts("list is empty");
+    else
+        Del(tail->prev);
+}
+
+Node* List::FindKey(int k) {
+    Node* p = head->next;
+    while (p != tail && p->key != k)
+        p = p->next;
+    if (p == tail)
+        return NULL;
+    else
+        return p;
+}
+Node* List::FindPos(int pos) {
+    Node* p = head;
+    int i = 1;
+    while ((p != NULL) && (i <= pos))
+    {
+        i++;
+        p = p->next;
+    }
+    if (p == NULL) {
+        cout << "Nety pos";
+        return NULL;
+    }
+    else 
+        return p;
+}
+Node* List::Max() {
+    Node* M = NULL;
+    Node* q = head->next;
+    if (q == tail) {
+        cout << " list is empty" << endl;
+        return 0;
+    }
+    M = q;
+    q = q->next;
+    while (q != tail) {
+        if (q->key > M->key) {
+            M = q;
+        }
+        q = q->next;
+    }
+    return M;
+}
+Node* List::Min() {
+    Node* M = NULL;
+    Node* q = head->next;
+    if (q == tail) {
+        cout << " list is empty" << endl;
+        return 0;
+    }
+    M = q;
+    q = q->next;
+    while (q != tail) {
+        if (q->key < M->key) {
+            M = q;
+        }
+        q = q->next;
+    }
+    return M;
+}
+bool List::Empty() {
+    if (head->next == tail)
+        return true;
+    else
+        return false;
+}
+bool List::NotEmpty() {
+    if (head->next == tail)
+        return false;
+    else
+        return true;
+}
+void List::Clear() {
+    Node* p;
+
+    for (p = head->next; p!=tail; p = head->next)
+        DelHead();
+}
+int List::SizeList() {
+    int c = 0;
+    Node* q = head->next;
+    if (q == tail) {
+        cout << " list is empty" << endl;
+        return 0;
+    }
+    q = q->next;
+    while (q != tail) {
+        c++;
+        q = q->next;
+    }
+    return c+1;
+   }
+bool List::operator == (List x) {
+    int n1, n2,c=0;
+    Node* q1 = head->next;
+    Node* q2 = x.head->next;
+    n1 = this->SizeList();
+    n2 = x.SizeList();
+    if (n1 != n2) {
+        return false;
+    }
+    else
+    {
+        while (q1 != tail)
+        {
+            if (q1->key == q2->key) {
+                c++;
+            }
+            q1 = q1->next;
+            q2 = q2->next;
+        }
+        if (c == n1) {
+            return true;
+        }
+        else
+            return false;
+    }
+}
+bool List::operator != (List x) {
+    int n1, n2, c = 0;
+    Node* q1 = head->next;
+    Node* q2 = x.head->next;
+    n1 = this->SizeList();
+    n2 = x.SizeList();
+    if (n1 != n2) {
+        return true;
+    }
+    else
+    {
+        while (q1 != tail)
+        {
+            if (q1->key == q2->key) {
+                c++;
+            }
+            q1 = q1->next;
+            q2 = q2->next;
+        }
+        if (c == n1) {
+            return false;
+        }
+        else
+            return true;
+    }
+}
+void List::Scan(int n) {
+    cout << "enter " << n << "elements of list" << endl;
+    Clear();
+    int i, x;
+    for (i = 0; i < n; i++) {
+        cin >> x;
+        AddToTail(x);
+    }
+}
+void List::Print() {
+    if (Empty()) {
+        cout << "List is empty" << endl;
+        return;
+    }
+    Node* p;
+    for (p = head->next; p != tail; p = p->next)
+        cout << p->key << " ";
+    cout << endl;
+}
+ostream& operator<< (ostream& r, List& X) {
+    X.Print();
+    return r;
+}
+istream& operator>> (istream& r, List& X) {
+    int n;
+    cout << "enter the number of elements in list" << endl;
+    cin >> n;
+    X.Scan(n);
+    return r;
+}
+int List::InputFindPosKey(int k) {
+    Node* p = FindPos(k);
+    if (p != NULL) {
+        //p = p->next;
+        return p->key;
+    }
+    else
+        return -1;
+}
+int List::InputFindKey(int k) {
+    Node* p = FindKey(k);
+    if (p != NULL) {
+        p = p->next;
+        return p->key;
+    }
+    else
+        return -1;
+}
+void List::AddAfterPos(int k,int z) 
+{
+    Node* p = head->next;
+    while (p != tail && p->key != k)
+        p = p->next;
+    if (p == tail)
+        AddToTail(k);
+    else
+        AddAfter(z, p);
+}
